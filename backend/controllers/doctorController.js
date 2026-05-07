@@ -318,7 +318,7 @@ export async function deleteDoctor(req, res) {
 } 
 
 // to toggle Availability
-export async function toggleAvailabilty(req, res) {
+export async function toggleAvailability(req, res) {
     try {
         const { id } = req.params;
 
