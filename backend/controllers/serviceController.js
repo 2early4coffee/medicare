@@ -128,7 +128,7 @@ export async function getServices(req, res) {
 
 // to get service by id
 
-export async function getServiceId(req, res) {
+export async function getServiceById(req, res) {
     try {
         const {id} = req.params;
         const service = await Service.findById(id).lean();
@@ -205,7 +205,7 @@ export async function updateService(req, res) {
 
         return res.status(200).json({
             success: true,
-            date: updateData,
+            data: updateData,
             message: "Service Updated"
         });
     }
@@ -240,7 +240,7 @@ export async function deleteService(req, res) {
             }
         }
         await existing.deleteOne()
-        return res.status(200)({
+        return res.status(200).json({
             success: true,
             message: "Service Deleted."
         });
