@@ -2,16 +2,16 @@ import { getAuth } from '@clerk/express';
 import Appointment from '../models/Appointment.js';
 import Doctor from '../models/Doctor.js';
 import dotenv from 'dotenv';
-import stripe from 'stripe';
+import Stripe from 'stripe';  
 
 import {getAuth} from '@clerk/express';
-import { clerkClient } from '@clerk/express'; 
+import { clerkClient } from '@clerk/clerk-sdk-node'; 
 dotenv.config();
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const  MAJOR_ADMIN_ID = process.env.MAJOR_ADMIN_ID || null;
-const stripe = STRIPE_SECRET_KEY ? stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-11-15'}) : null;
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-11-15' }) : null;
 
 //helpers
 //this function will return a finite number.
@@ -326,29 +326,29 @@ export const createAppointment = async (req, res) => {
 export const confirmPayment = async (req, res) => {
     try {
         const { session_id } = req.query;
-        if (!session_id) {
-            return res.status(400).json({ success: false, message: "Session ID is required" 
-            });
 
-            if(!stripe) {
-                return res.status(500).json({ success: false, message: "Stripe not configured on server" });
-                let session;
-                try{
-                    session = await stripe.checkout.sessions.retrieve(session_id);
-                } catch (err) {
-            console .error("Stripe retrieve session error:", err);
-            return res.status(404).json({ success: false, message: "Stripe session not found" 
-            });
+        if (!session_id) {
+            return res.status(400).json({ success: false, message: "Session ID is required" });
         }
 
-        if(!session) return res.status(404).json({ success: false, message: "Invalid session" });
+        if (!stripe) {
+            return res.status(500).json({ success: false, message: "Stripe not configured on server" });
+        }
 
+        let session;
+        try {
+            session = await stripe.checkout.sessions.retrieve(session_id);
+        } catch (err) {
+            console.error("Stripe retrieve session error:", err);
+            return res.status(404).json({ success: false, message: "Stripe session not found" });
+        }
+
+        if (!session) {
+            return res.status(404).json({ success: false, message: "Invalid session" });
+        }
 
         if (session.payment_status !== "paid") {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Payment not completed" 
-            });
+            return res.status(400).json({ success: false, message: "Payment not completed" });
         }
 
          // Try match by sessionId first
@@ -386,22 +386,181 @@ export const confirmPayment = async (req, res) => {
         }
     }
 
-}
-
-
-
-
-
-
-
-
-
-
-
+    
+    // last attempt: find appointment created in last 15 minutes with matching amount
+    if (!appt) {
+        const amount = Math.round((session.amount_total || 0) / 100);
+      const fifteenAgo = new Date(Date.now() - 1000 * 60 * 15);
+        appt = await Appointment.findOneAndUpdate(
+        { fees: amount, createdAt: { $gte: fifteenAgo } },
+        {
+            "payment.status": "Paid",
+            "payment.providerId": session.payment_intent || null,
+            status: "Confirmed",
+            paidAt: new Date(),
+            sessionId: session_id,
+        },
+        { new: true }
+        );
     }
+
+    if (!appt) {
+        return res.status(404).json({ success: false, message: "Appointment not found for this payment session" });
+    }
+
+    return res.json({ success: true, appointment: appt });
+}   
     
     catch (err) {
-
+        console.error("confirmPayment error:", err);
+        return res.status(500).json({ success: false, message: "Server error" });
     }
 
 }
+
+
+// to update an appointment
+export const updateAppointment = async (req, res) => {
+    try{
+    const { id } = req.params;
+    const body = req.body || {};
+    const appt = await Appointment.findById(id);
+
+    if (!appt) return res.status(404).json({ success: false, message: "Appointment not found" });
+
+    //updateAppointment 
+    const terminal = appt.status === "Completed" || appt.status === "Canceled";
+    if (terminal && body.status && body.status !== appt.status) {
+        return res.status(400).json({ success: false, message: "Cannot change status of a completed/canceled appointment" });
+    }
+
+    const update = {};
+    if (body.status) update.status = body.status;
+    if (body.notes !== undefined) update.notes = body.notes;
+
+    if (body.date && body.time) {
+        if (appt.status === "Completed" || appt.status === "Canceled") {
+        return res.status(400).json({ success: false, message: "Cannot reschedule completed/canceled appointment" });
+        }
+        update.date = body.date;
+        update.time = body.time;
+        update.status = "Rescheduled";
+        update.rescheduledTo = { date: body.date, time: body.time };
+    }
+
+    const updated = await Appointment.findByIdAndUpdate(id, update, { new: true , runValidators: true}).populate({path: "doctorId", select: "name imageUrl"}).lean();
+
+    return res.json({ success: true, appointment: updated });
+    }
+        catch (err) {
+            console.error("updateAppointment error:", err);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+    }
+
+
+// to cancel an appointment
+
+export const cancelAppointment = async (req, res) => {
+    try{
+    const { id } = req.params;
+    const appt = await Appointment.findById(id);
+
+    if (!appt) return res.status(404).json({ success: false, message: "Appointment not found" });
+
+    appt.status = "Cancelled";
+    await appt.save();
+    return res.json({ success: true, message: "Appointment cancelled" });
+    }
+
+        catch (err) {
+            console.error("cancelAppointment error:", err);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+
+}
+
+//to get stats
+
+export const getStats = async (req, res) => {
+    try {
+        const total = await Appointment.countDocuments();
+        const paidAgg = await Appointment.aggregate([{ $match: { "payment.status": "Paid" } }, { $group: { _id: null, total: { $sum: "$fees" } } }]);
+        const revenue = (paidAgg[0] && paidAgg[0].total) || 0;
+
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const recent =await Appointment.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+
+        return res.json({ success: true, stats: { total, revenue, recentLast7Days: recent } });
+
+    }
+
+            catch (err) {
+            console.error("getStats error:", err);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+}
+
+//to getAppointment by doctor
+export const getAppointmentsByDoctor = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        if (!doctorId) return res.status(400).json({ success: false, message: "Doctor ID is required" });
+
+            const { mobile, status, search = "", limit: limitRaw = 50, page: pageRaw = 1 } = req.query;
+    const limit = Math.min(200, Math.max(1, parseInt(limitRaw, 10) || 50));
+    const page = Math.max(1, parseInt(pageRaw, 10) || 1);
+    const skip = (page - 1) * limit;
+
+    const filter = { doctorId };
+    if (mobile) filter.mobile = mobile;
+    if (status) filter.status = status;
+    if (search) {
+        const re = new RegExp(search, "i");
+        filter.$or = [{ patientName: re }, { mobile: re }, { notes: re }];
+    }
+
+    const items = (await Appointment.find(filter))/sort({date: 1, time: 1}).skip(skip).limit(limit).lean().populate("doctorId", "name specialization owner imageUrl image");
+
+    const total = await Appointment.countDocuments(filter);
+    return res.json({ 
+        success: true, 
+        appointments: items, 
+        meta: { page, limit, total, count: items.length } 
+    });
+
+    } 
+    
+            catch (err) {
+            console.error("getAppointmentsByDoctor error:", err);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+
+}
+
+// to get Registered user account
+
+export const getRegisteredUser = async (req, res) => {
+    try {
+        const totalUsers = await clerkClient.users.getUserList();
+        return res.json({ success: true, totalUsers });
+    }
+
+    catch (err) {
+        console.error("getRegisteredUser error:", err);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+}
+
+export default {
+    getAppointments,
+    getAppointmentsByPatient,
+    createAppointment,
+    confirmPayment,
+    updateAppointment,
+    cancelAppointment,
+    getStats,
+    getAppointmentsByDoctor,
+    getRegisteredUser
+};
