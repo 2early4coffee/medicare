@@ -240,3 +240,75 @@ export const createServiceAppointment = async (req, res) => {
 };
 
 //to confirm service payment.
+export const confirmServicePayment = async (req, res) => {
+    try {
+            const { session_id } = req.query;
+            if (!session_id) return res.status(400).json({ 
+                success: false, 
+                message: "session_id is required" 
+            });
+            if (!stripe) return res.status(500).json({ 
+                success: false, 
+                message: "Stripe not configured on server" 
+            });
+
+            let session;
+            try {
+                session = await stripe.checkout.sessions.retrieve(session_id);}
+                catch (err) {
+                    console.error("Stripe, Error:", err);
+                    return res.status(500).json({ 
+                        success: false, 
+                        message: "Stripe session not found" 
+                    });
+                }
+
+                if (!session) return res.status(404).json({ 
+                    success: false, 
+                    message: "Invalid session" 
+                });
+
+                if (session.payment_status !== "paid") return res.status(400).json({ 
+                    success: false, 
+                    message: "Payment not completed" 
+                });
+
+                    let appt = await ServiceAppointment.findOneAndUpdate(
+        { "payment.sessionId": session_id },
+        {
+        $set: {
+            "payment.status": "Confirmed",
+            "payment.providerId": session.payment_intent || "",
+            "payment.paidAt": new Date(),
+            status: "Confirmed",
+        },
+        },
+        { new: true }
+    );
+
+    if (!appt && session.metadata?.appointmentId) {
+        appt = await ServiceAppointment.findOneAndUpdate(
+        { _id: session.metadata.appointmentId },
+        {
+            $set: {
+            "payment.status": "Confirmed",
+            "payment.providerId": session.payment_intent || "",
+            "payment.paidAt": new Date(),
+            status: "Confirmed",
+            },
+        },
+        { new: true }
+        );
+    }
+
+    if (!appt) return res.status(404).json({ success: false, message: "Service appointment not found" });
+
+    return res.status(200).json({ success: true, appointment: appt });
+
+
+        
+    } catch (err) {
+    console.error("confirmServicePayment unexpected error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+    }
+}
