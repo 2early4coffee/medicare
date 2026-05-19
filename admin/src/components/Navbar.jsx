@@ -15,7 +15,9 @@ import {
     Calendar,
     Grid,
     PlusSquare,
-    List
+    List,
+    Menu,
+    X
 } from 'lucide-react';
 
 import { useClerk, useAuth, useUser } from '@clerk/clerk-react';
@@ -229,8 +231,93 @@ const Navbar = () => {
                                 </div>
                             )}
                         </div>
-
+                            {/* MOBILE MENU TOGGLE */}
+                            <button onClick={() => setOpen((o) => !o)} className={ns.mobileMenuButton} > {open ? <X size={18} /> : <Menu size={18} />}
+                            </button>
                     </div>
+                    {/*mobile navigation*/}
+                        {open && (
+                            <div
+                                className={ns.mobileOverlay}
+                                onClick={() => setOpen(false)}/>
+                        )}
+
+                        {open && (
+                            <div className={ns.mobileMenuContainer} id="mobile-menu">
+                                <div className = {ns.mobileMenuInner}>
+                                        <MobileItem
+                                        to="/h"
+                                        label="Dashboard"
+                                        icon={<Home size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+
+                                        <MobileItem
+                                        to="/add"
+                                        label="Add Doctor"
+                                        icon={<UserPlus size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+                                        <MobileItem
+                                        to="/list"
+                                        label="List Doctors"
+                                        icon={<Users size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+                                        <MobileItem
+                                        to="/appointments"
+                                        label="Appointments"
+                                        icon={<Calendar size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+
+                                        <MobileItem
+                                        to="/service-dashboard"
+                                        label="Service Dashboard"
+                                        icon={<Grid size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+                                        <MobileItem
+                                        to="/add-service"
+                                        label="Add Service"
+                                        icon={<PlusSquare size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+                                        <MobileItem
+                                        to="/list-service"
+                                        label="List Services"
+                                        icon={<List size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+                                        <MobileItem
+                                        to="/service-appointments"
+                                        label="Service Appointments"
+                                        icon={<Calendar size={16} />}
+                                        onClick={() => setOpen(false)}
+                                        />
+
+                                        <div className={ns.mobileAuthContainer}>
+                                            {isSignedIn ? (<button onClick={() => {
+                                                handleSignOut();
+                                                setOpen(false)
+                                            }} className={ns.mobileSignOutButton}>
+                                            Sign Out
+                                            </button>
+                                        
+                                        ): (
+                                            <div className = "space-y-2">
+                                                <button onClick={() =>{
+                                                    handleOpenSignIn();
+                                                    setOpen(false);
+                                                }} className = {ns.mobileLoginButton + " " + ns.cursorPointer}> 
+                                                Log In
+                                                </button>
+                                            </div>
+                                        )}
+                                        </div>
+                                </div>
+                            </div>
+                        )}
                 </nav>
             </header>
         </div>
@@ -247,12 +334,36 @@ function CenterNavItem({ to, label, icon }) {
             end
             className={({ isActive }) =>
                 `nav-item ${isActive ? "active" : ""} ${
-                    isActive ? "centerNavItemActive" : "centerNavItemInactive"
+                    isActive
+                        ? "centerNavItemActive"
+                        : "centerNavItemInactive"
                 } ${ns.centerNavItemBase}`
             }
         >
             <span>{icon}</span>
             <span className="font-medium">{label}</span>
+        </NavLink>
+    );
+}
+
+function MobileItem({ to, label, icon, onClick }) {
+    return (
+        <NavLink
+            to={to}
+            onClick={onClick}
+            className={({ isActive }) =>
+                `${ns.mobileItemBase} ${
+                    isActive
+                        ? ns.mobileItemActive
+                        : ns.mobileItemInactive
+                }`
+            }
+        >
+            {icon}
+
+            <span className="font-medium text-sm">
+                {label}
+            </span>
         </NavLink>
     );
 }
