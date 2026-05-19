@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
 import { navbarStyles as ns } from '../assets/dummyStyles';
 import logoImg from '../assets/logo.png';
 import {
@@ -18,6 +18,8 @@ import {
     List
 } from 'lucide-react';
 
+import { useClerk, useAuth, useUser } from '@clerk/clerk-react';
+
 const Navbar = () => {
     const [open, setOpen] = React.useState(false);
 
@@ -26,6 +28,145 @@ const Navbar = () => {
 
     const location = useLocation();
     const navigate = useNavigate();
+
+    // clerk
+    const clerk = useClerk(); 
+    const { getToken, isLoaded: authLoaded } = useAuth();
+    const { isSignedIn, user, isLoaded: userLoaded } = useUser();
+
+    // sliding active indicator
+    const moveIndicator = useCallback(() => {
+        const container = navInnerRef.current;
+        const ind = indicatorRef.current;
+        if (!container || !ind) return;
+
+        const active = container.querySelector(".nav-item.active");
+        if (!active) {
+            ind.style.opacity = "0";
+            return;
+        }
+
+        const containerRect = container.getBoundingClientRect();
+        const activeRect = active.getBoundingClientRect();
+
+        const left = activeRect.left - containerRect.left + container.scrollLeft;
+        const width = activeRect.width;
+
+        ind.style.transform = `translateX(${left}px)`;
+        ind.style.width = `${width}px`;
+        ind.style.opacity = "1";
+    }, []);
+
+    // moves in 0.12 seconds
+    useLayoutEffect(() => {
+        moveIndicator();
+        const t = setTimeout(() => {
+            moveIndicator();
+        }, 120);
+        return () => clearTimeout(t);
+    }, [location.pathname, moveIndicator]);
+
+    // scroll sync for indicator
+    useEffect(() => {
+        const container = navInnerRef.current;
+        if (!container) return;
+
+        const onScroll = () => {
+            moveIndicator();
+        };
+        container.addEventListener("scroll", onScroll, { passive: true });
+
+        const ro = new ResizeObserver(() => {
+            moveIndicator();
+        });
+        ro.observe(container);
+        if (container.parentElement) ro.observe(container.parentElement);
+
+        window.addEventListener("resize", moveIndicator);
+
+        moveIndicator();
+
+        return () => {
+            container.removeEventListener("scroll", onScroll);
+            ro.disconnect();
+            window.removeEventListener("resize", moveIndicator);
+        };
+    }, [moveIndicator]);
+
+    // close mobile menu on Escape
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.key === "Escape" && open) setOpen(false);
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [open]);
+
+    // store Clerk token in localStorage when signed in
+    useEffect(() => {
+        let mounted = true;
+        const storeToken = async () => {
+            if (!authLoaded || !userLoaded) return;
+            if (!isSignedIn) {
+                try {
+                    localStorage.removeItem("clerk_token"); 
+                } catch (e) {
+                    // ignore
+                }
+                return;
+            }
+
+            try {
+                if (getToken) {
+                    const token = await getToken();
+                    if (!mounted) return;
+                    if (token) {
+                        try {
+                            localStorage.setItem("clerk_token", token);
+                        } catch (e) {
+                            console.warn("Failed to write clerk token in local storage", e);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn("Could not retrieve Clerk token,", err);
+            }
+        };
+        storeToken();
+        return () => {
+            mounted = false;
+        };
+    }, [isSignedIn, authLoaded, userLoaded, getToken]);
+
+    // open Clerk sign-in modal
+    const handleOpenSignIn = () => {
+        if (!clerk || !clerk.openSignIn) {
+            console.warn("Clerk is not available");
+            return;
+        }
+        clerk.openSignIn(); 
+        navigate("/h");     
+    };
+
+    // sign out
+    const handleSignOut = async () => { 
+        if (!clerk || !clerk.signOut) {
+            console.warn("Clerk is not available");
+            return;
+        }
+        try {
+            await clerk.signOut();
+        } catch (err) {
+            console.error("Failed to sign out", err);
+        } finally {
+            try {
+                localStorage.removeItem("clerk_token");
+            } catch (e) {
+                // ignore
+            }
+            navigate("/");
+        }
+    }; 
 
     return (
         <div>
@@ -48,61 +189,45 @@ const Navbar = () => {
                             <div className={ns.glowEffect}>
                                 <div className={ns.centerNavInner}>
                                     <div className={ns.centerNavItem}>
-
                                         <div
                                             ref={navInnerRef}
                                             tabIndex={0}
                                             className={ns.centerNavScrollContainer}
-                                            style={{
-                                                WebkitOverflowScrolling: "touch"
-                                            }}
+                                            style={{ WebkitOverflowScrolling: "touch" }}
                                         >
-                                            <CenterNavItem
-                                                to="/h"
-                                                label="Dashboard"
-                                                icon={<Home size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/add"
-                                                label="Add Doctor"
-                                                icon={<UserPlus size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/list"
-                                                label="List Doctors"
-                                                icon={<Users size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/appointments"
-                                                label="Appointments"
-                                                icon={<Calendar size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/service-dashboard"
-                                                label="Service Dashboard"
-                                                icon={<Grid size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/add-service"
-                                                label="Add Service"
-                                                icon={<PlusSquare size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/list-service"
-                                                label="List Services"
-                                                icon={<List size={16} />}
-                                            />
-                                            <CenterNavItem
-                                                to="/service-appointments"
-                                                label="Service Appointments"
-                                                icon={<Calendar size={16} />}
-                                            />
-
+                                            <CenterNavItem to="/h"                    label="Dashboard"            icon={<Home size={16} />}       />
+                                            <CenterNavItem to="/add"                  label="Add Doctor"           icon={<UserPlus size={16} />}   />
+                                            <CenterNavItem to="/list"                 label="List Doctors"         icon={<Users size={16} />}      />
+                                            <CenterNavItem to="/appointments"         label="Appointments"         icon={<Calendar size={16} />}   />
+                                            <CenterNavItem to="/service-dashboard"    label="Service Dashboard"    icon={<Grid size={16} />}       />
+                                            <CenterNavItem to="/add-service"          label="Add Service"          icon={<PlusSquare size={16} />} />
+                                            <CenterNavItem to="/list-service"         label="List Services"        icon={<List size={16} />}       />
+                                            <CenterNavItem to="/service-appointments" label="Service Appointments" icon={<Calendar size={16} />}   />
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* RIGHT SIDE */}
+                        <div className={ns.rightContainer}>
+                            {isSignedIn ? (
+                                <button
+                                    onClick={handleSignOut}
+                                    className={`${ns.signOutButton} ${ns.cursorPointer}`} 
+                                >
+                                    Sign Out
+                                </button>
+                            ) : (
+                                <div className="hidden lg:flex items-center gap-2"> {/* ✅ was "lg:f;ex" */}
+                                    <button
+                                        onClick={handleOpenSignIn}
+                                        className={`${ns.loginButton} ${ns.cursorPointer}`} 
+                                    >
+                                        Log In
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                     </div>
@@ -121,9 +246,8 @@ function CenterNavItem({ to, label, icon }) {
             to={to}
             end
             className={({ isActive }) =>
-                `nav-item ${isActive ? "active" : ""} ${isActive
-                    ? "centerNavItemActive"
-                    : "centerNavItemInactive"
+                `nav-item ${isActive ? "active" : ""} ${
+                    isActive ? "centerNavItemActive" : "centerNavItemInactive"
                 } ${ns.centerNavItemBase}`
             }
         >
