@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react';
 import { dashboardStyles as s } from '../assets/dummyStyles';
+import { CalendarRange, CheckCircle, UserRoundCheck, Users, BadgeIndianRupee, XCircle, Search } from 'lucide-react';
 
-const API_BASE = 'http://localhost:4000/';
+const API_BASE = 'http://localhost:4000';
 const PATIENT_COUNT_API = '${API_BASE}/api/appointments/patients/count';
 
 
@@ -227,11 +228,82 @@ const DashboardPage = () => {
                 {/* stats section*/}
                 <div className={s.statsGrid}>
                     <StatCard icon = {<Users className = "w-6 h-6"/>}
-                    label = "Total Doctors" value ={totals.totalDoctor}/>
+                    label = "Total Doctors" value ={totals.totalDoctors}
+                    
+                    />
+                    <StatCard icon = {<UserRoundCheck className = "w-6 h-6"/>} // shows count fetch from the backend
+                    label = "Total Registered Users" value ={
+                        patientCountLoading ? "Loading..."
+                        : (patientCount ?? totals.totalLoginPatients)
+                    }
+                    />
+
+                    <StatCard icon = {<CalendarRange className = "w-6 h-6"/>}
+                    label = "Total Appointment" value ={totals.totalAppointments}
+                    />
+
+                    <StatCard icon = {<BadgeIndianRupee className = "w-6 h-6"/>}
+                    label = "Total Earnings" value={`₹ ${totals.totalEarnings.toLocaleString()}`}
+                    />
+
+                    <StatCard icon = {<CheckCircle className = "w-6 h-6"/>}
+                    label = "Completed" value ={totals.completed}
+                    />
+
+                    <StatCard icon = {<XCircle className = "w-6 h-6"/>}
+                    label = "Canceled" value ={totals.canceled}
+                    />
+                </div>
+
+<div className="mb-6">
+
+    <label className={s.searchLabel}>
+        Search Doctor
+    </label>
+
+    <div className={s.searchContainer}>
+
+        <div className={s.searchInputContainer}>
+
+            <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className={s.searchInput}
+                placeholder="Search name / Specialization / Fee"
+            />
+
+            <Search className={s.searchIcon} />
+
+        </div>
+
+        <button
+            onClick={() => {
+                setQuery("");
+                setShowAll(false);
+            }}
+            className={`${s.clearButton} ${s.cursorPointer}`}>
+            Clear
+        </button>
+
+    </div>
+</div>
+            </div>
+        </div>
+    );
+};
+
+export default DashboardPage;
+
+function StatCard({ icon, label, value }) {
+    return (
+        <div className={s.statCard}>
+            <div className={s.statCardContent}>
+                <div className={s.statIconContainer}>{icon}</div>
+                <div className="flex-1">
+                    <div className={s.statLabel}>{label}</div>
+                    <div className={s.statValue}>{value}</div>  {/* ✅ className was outside the tag */}
                 </div>
             </div>
         </div>
-    )
+    );
 }
-
-export default DashboardPage
