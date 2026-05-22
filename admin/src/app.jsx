@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route } from 'react-router-dom';
 import Hero from './pages/Hero';
 import Home from './pages/Home';
+import Add from './pages/Add';
 import { useUser } from '@clerk/clerk-react';
 import { Link } from "react-router-dom";
 
@@ -42,10 +43,12 @@ const App = () => {
         <Home/> 
         
         </RequireAuth>}/>
-      {/*  protected route */}
-      {/* <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} /> */}
+
+        <Route path="/add" element={<RequireAuth>
+        <Add/>
+        </RequireAuth>}/>
     </Routes>
-  )
-}
+  );
+};
 
 export default App;
