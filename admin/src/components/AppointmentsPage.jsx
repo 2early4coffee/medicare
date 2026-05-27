@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { pageStyles, statusClasses, keyframesStyles } from '../assets/dummyStyles'
+import { Calendar, Search } from 'lucide-react';
 
 const API_BASE = 'http://localhost:4000';
 
@@ -233,7 +234,51 @@ useEffect(() => {
 
     return ( 
         <div className={pageStyles.container}>
+            <style>{keyframesStyles}</style>
+            <div className={pageStyles.maxWidthContainer}>
+                <header className={pageStyles.headerControlsSection}>
+                    <div className={pageStyles.headerTitleSection}>
+                    <h1 className={pageStyles.headerTitle}> Appointments </h1>
+                    <p className={pageStyles.headerSubtitle}> Manage and serach upcoming patient appointments
+                    </p>
+                    </div>
+                    <div className={pageStyles.headerControlsSection}>
+                    <div className="flex flex-col md:flex-col sm:flex-row items-center gap-3
+                    w-full sm:w-auto">
+                        <div className={pageStyles.searchContainer}>
+                            <Search size={16} className={pageStyles.searchIcon}/>
+                            <input className= {pageStyles.searchInput} placeholder="Search doctor, patient, speciality or mobile"
+                            value={query} onChange={(e) => setQuery(e.target.value)}/>
+                        </div>
+                        <div className={pageStyles.filterContainer}>
+                            <div className={pageStyles.dateFilter}>
+                            <Calendar size={14} className={pageStyles.dateFilterIcon}/>
+                            <input className = {pageStyles.dateInput} type="date" value={filterDate}
+                            onChange={(e) => setFilterDate(e.target.value)}/>
+                            </div>
 
+                            <select className={pageStyles.selectFilter}
+                            value={filterSpeciality} onChange={(e) => setFilterSpeciality (e.target.value)}>
+                                {specialities.map((s) => (
+                                    <option value={s} key={s}>
+                                        {s === "all" ? "All Specialities" : s}
+                                    </option>
+                                ))}
+                            </select>
+                            <button onClick={() =>{
+                                setQuery("");
+                                setFilterDate("");
+                                setFilterSpeciality("all");
+                                setShowAll(false);
+                                setError(null);
+                            }} className={pageStyles.clearButton}>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                </header>
+            </div>
         </div>
     )
 };
