@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import {  serviceDashboardStyles } from '../assets/dummyStyles.js';
-import { ClipboardList, Calendar, XCircle, CheckCircle,  } from "lucide-react";
+import { ClipboardList, Calendar, XCircle, CheckCircle, Search,  } from "lucide-react";
 
 // normalize the backend data that is coming from the DB
 function normalizeService(doc) {
@@ -290,6 +290,14 @@ const ServiceDashboard = ({ services: servicesProp = null }) => {
 
                     <StatCard icon={<XCircle size={18}/>} label= "Cancelled"
                     value={totals.totalCancelled}/>
+            </div>
+            {/* search bar*/}
+            <div className={serviceDashboardStyles.search.container}>
+                <div className={serviceDashboardStyles.search.inputContainer}>
+                    <Search size={16} className="text-emerald-700"/>
+                    <input type="text" placeholder="Search services..." value={searchQuery}
+                    onChange={(e) =>  setSearchQuery(e.target.value)} className={serviceDashboardStyles.search.input} />
+                </div>
             </div>
         </div>
     </div>
