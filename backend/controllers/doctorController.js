@@ -137,6 +137,7 @@ export async function createDoctor(req, res) {
 // to get doctor
 export const getDoctors = async (req, res) => {
     try {
+
     const { q = "", limit: limitRaw = 200, page: pageRaw = 1 } = req.query;
     const limit = Math.min(500, Math.max(1, parseInt(limitRaw, 10) || 200));
     const page = Math.max(1, parseInt(pageRaw, 10) || 1);
