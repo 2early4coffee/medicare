@@ -1,4 +1,4 @@
-import serviceAppointment from "../models/serviceAppointment.js";
+import ServiceAppointment from "../models/serviceAppointment.js";
 import Service from "../models/Service.js";
 import Stripe from "stripe";
 import {getAuth} from "@clerk/express";
@@ -353,7 +353,7 @@ export const getServiceAppointmentById = async (req, res) => {
     const {id} = req.params;
     const appt = await ServiceAppointment.findById(id).lean();
     
-    if (!appt) return res.status(4004).json({
+    if (!appt) return res.status(404).json({
         success: false,
         message: "Not found the appointment"
     });
@@ -409,9 +409,11 @@ export const updateServiceAppointment = async (req, res) => {
         }
     }
 
-    const updated = await ServiceAppointment.findOneAndUpdate(id, {$set: updates}, {
-        new: true, runValidators: true,
-    });
+    const updated = await ServiceAppointment.findOneAndUpdate(
+    { _id: id }, 
+    { $set: updates }, 
+    { new: true, runValidators: true }
+);
 
     if(!updated) return res.status(404).json({
         success: false,
@@ -487,7 +489,7 @@ export const getServiceAppointmentsByPatient = async (req, res) => {
     try {
         const clerkUserId = resolveClerkUserId(req);
         const {createdBy, mobile} = req.query;
-        const resolvedCreateBy = createBy || clerkUserId || null;
+        const resolvedCreateBy = createdBy || clerkUserId || null;
         if (!resolvedCreatedBy && !mobile) return res.json({
             success: true,
             data: []
@@ -497,7 +499,7 @@ export const getServiceAppointmentsByPatient = async (req, res) => {
         if (resolvedCreatedBy) filter.createdBy = resolvedCreatedBy;
         if (mobile) filter.mobile =mobile;
 
-        const list = await serviceAppointment.find(filter).sort({createdAt: -1 }).lean();
+        const list = await ServiceAppointment.find(filter).sort({createdAt: -1 }).lean();
         return res.json({
             success:true,
             data: list
