@@ -1,23 +1,16 @@
-import React, { useRef, useState, useEffect } from "react"; 
+import { useRef, useState, useEffect } from "react"; 
 import { navbarStyles } from "../assets/dummyStyles";
 import { useLocation, Link } from "react-router-dom";
 import { useClerk, SignedOut, SignedIn, UserButton } from "@clerk/clerk-react";
 import { User, Key, X, Menu } from 'lucide-react';
 import logo from '../assets/logo.png';
 
-const STORAGE_KEY = "doctorToken_v1";
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isDoctorLoggedIn, setIsDoctorLoggedIn] = useState(() => {
-    try {
-      return Boolean(localStorage.getItem(STORAGE_KEY));
-    } catch {
-      return false;
-    }
-  });
   const location = useLocation();
   const navRef = useRef(null);
   const clerk = useClerk();
@@ -38,16 +31,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Sync doctor login state
-  useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key === STORAGE_KEY) {
-        setIsDoctorLoggedIn(Boolean(e.newValue));
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -131,7 +115,7 @@ const Navbar = () => {
               </SignedOut>
 
               <SignedIn>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton/>
               </SignedIn>
 
               {/* Mobile toggle */}
