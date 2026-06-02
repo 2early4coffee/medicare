@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react"; 
 import { navbarStyles } from "../assets/dummyStyles";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useClerk, SignedOut, SignedIn, UserButton } from "@clerk/clerk-react";
 import { User, Key, X, Menu } from 'lucide-react';
 import logo from '../assets/logo.png';
@@ -21,7 +21,7 @@ const Navbar = () => {
   const location = useLocation();
   const navRef = useRef(null);
   const clerk = useClerk();
-  const navigate = useNavigate();
+
 
   // Hide and show navbar on scroll
   useEffect(() => {
@@ -155,10 +155,10 @@ const Navbar = () => {
                     key={idx}
                     to={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`${navbarStyles.mobileMenuItem} ${  // ✅ backticks
+                    className={`${navbarStyles.mobileMenuItem} ${  
                       isActive
                         ? navbarStyles.mobileMenuItemActive
-                        : navbarStyles.mobileMenuItemInactive       // ✅ typo fixed
+                        : navbarStyles.mobileMenuItemInactive       
                     }`}
                   >
                     {item.label}
@@ -179,7 +179,7 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       setIsOpen(false);
-                      clerk.openSignIn();                           // ✅ added ()
+                      clerk.openSignIn();                           
                     }}
                     className={navbarStyles.mobileLoginButton}
                   >

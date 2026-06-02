@@ -611,10 +611,10 @@ export const navbarStyles = {
   
   // Logo section
   logoLink: "flex items-center gap-3 -ml-3 sm:-ml-4",
-  logoContainer: "relative group w-20 h-20 sm:w-24 sm:h-24 lg:w-15 lg:h-15 xl:w-32 xl:h-32",
-  logoImageWrapper: "relative flex items-center justify-center overflow-hidden p-2 mx-1 h-full w-full",
+  logoContainer: "flex items-center gap-2",
+  logoImageWrapper: "flex items-center justify-center shrink-0",
   logoImage: "w-14 h-14 sm:w-18 sm:h-18 lg:w-15 lg:h-15 xl:w-24 xl:h-24 md:w-20 md:h-20 object-contain",
-  logoTextContainer: "block sm:block",
+  logoTextContainer: "flex flex-col",
   logoTitle: "text-2xl md:text-2xl lg:text-2xl xl:text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-emerald-600 to-green-600 tracking-tight",
   logoSubtitle: "text-xs lg:text-xs text-gray-500",
   
