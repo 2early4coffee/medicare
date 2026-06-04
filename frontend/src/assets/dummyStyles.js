@@ -117,10 +117,12 @@ export const bannerStyles = {
   taglineHighlight: "text-green-600 font-semibold",
   
   // Features grid
-  featuresGrid: "grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 text-sm sm:text-base",
-  featureItem: "flex items-center justify-center lg:justify-start bg-linear-to-br from-green-500 to-green-200 backdrop-blur-sm p-3 rounded-full shadow-sm border",
+  featuresGrid: "grid grid-cols-2 gap-3 mb-6 text-sm sm:text-base w-full",
+  featureItem: "flex items-center justify-start bg-linear-to-br from-green-500 to-green-200 backdrop-blur-sm px-4 py-3 rounded-full shadow-sm border w-full min-w-0",
   featureIcon: "w-5 h-5 text-white mr-3",
   featureText: "text-gray-700 font-medium",
+
+  leftContainer: "flex-1 w-full text-center lg:text-left",
   
   // Feature border colors
   featureBorderGreen: "border-green-100",
