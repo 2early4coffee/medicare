@@ -197,7 +197,7 @@ export const certificationStyles = {
   logosContainer: "relative mb-10",
   logosInner: "relative p-4 mx-auto max-w-9xl",
   logosFlexContainer: "flex overflow-hidden",
-  logosMarquee: "flex animate-marquee-single whitespace-nowrap py-3",
+  logosMarquee: "flex items-center animate-marquee-single whitespace-nowrap py-3",
   logoItem: "inline-flex flex-col items-center mx-10 transform transition-all duration-500 group",
   logoImage: "w-16 h-16 object-contain filter transition-all duration-500",
   logoText: "mt-3 font-serif italic text-sm font-semibold text-gray-700 text-center max-w-[120px] leading-tight group-hover:text-green-700 transition-colors duration-300",

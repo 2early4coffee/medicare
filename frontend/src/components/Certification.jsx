@@ -25,7 +25,7 @@ const Certification = () => {
 
             {/* Background grid */}
             <div className={certificationStyles.backgroundGrid}>
-                <div className={certificationStyles.topline}></div>
+                <div className={certificationStyles.topLine}></div>
                 <div className={certificationStyles.gridContainer}>
                     <div className={certificationStyles.grid}>
                         {Array.from({ length: 144 }).map((_, i) => (
@@ -58,20 +58,20 @@ const Certification = () => {
                         </span>
                       </div> 
                 </div>
-                <div className={certificationStyles.logoContainer}>
-                  <div className={certificationStyles.logoInner}>
-                          <div className={certificationStyles.logoFlexContainer}>
-                            <div className={certificationStyles.logoMarquee}>
+                <div className={certificationStyles.logosContainer}>
+                  <div className={certificationStyles.logosInner}>
+                          <div className={certificationStyles.logosFlexContainer}>
+                            <div className={certificationStyles.logosMarquee}>
                               {duplicatedCertifications.map((cert, index) => (
                                 <div key={`cert-${cert.id}-${index}`}
                                 className={certificationStyles.logoItem}>
                                   <div className="relative">
                                     <img src={cert.image} alt={cert.name}
-                                    className={certificationStyles.logoName} />
+                                    className={certificationStyles.logoIamge} />
                                   
                                   </div>
                                   <span className={certificationStyles.logoText}>
-
+                                  {cert.name}
                                   </span>
                                 </div>
                               ))}
@@ -82,6 +82,7 @@ const Certification = () => {
 
                 </div>
             </div>
+            <style>{certificationStyles.animationStyles}</style>
         </div>
     );
 };
