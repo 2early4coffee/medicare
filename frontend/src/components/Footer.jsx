@@ -1,7 +1,7 @@
 import React from 'react'
 import { footerStyles } from '../assets/dummyStyles';
 import logo from '../assets/logo.png'
-import { Twitter, Facebook, Instagram, Linkedin, Youtube, Stethoscope, Activity, Phone, Mail, MapPin} from "lucide-react";
+import { Bird, Users, Briefcase, Play, Stethoscope, Activity, Phone, Mail, MapPin, Camera, ArrowRight } from "lucide-react";
 
 const Footer = () => {
 
@@ -26,31 +26,31 @@ const services = [
 
 const socialLinks = [
     {
-    Icon: Facebook,
+    Icon: Users,
     color: footerStyles.facebookColor,
     name: "Facebook",
     href: "https://www.facebook.com/people/Hexagon-Digital-Services/61567156598660/",
     },
     {
-    Icon: Twitter,
+    Icon: Bird,
     color: footerStyles.twitterColor,
     name: "Twitter",
     href: "https://www.linkedin.com/company/hexagondigtial-services/",
     },
     {
-    Icon: Instagram,
+    Icon: Camera,
     color: footerStyles.instagramColor,
     name: "Instagram",
     href: "http://instagram.com/hexagondigitalservices?igsh=MWp2NG1oNTlibWVnZA%3D%3D",
     },
     {
-    Icon: Linkedin,
+    Icon: Briefcase,
     color: footerStyles.linkedinColor,
     name: "LinkedIn",
     href: "https://www.linkedin.com/company/hexagondigtial-services/",
     },
     {
-    Icon: Youtube,
+    Icon: Play,
     color: footerStyles.youtubeColor,
     name: "YouTube",
     href: "https://youtube.com/@hexagondigitalservices?si=lxEFYNCP42t6AoDJ",
@@ -121,7 +121,38 @@ const socialLinks = [
                     </div>
 
                     {/*quick links*/}
-                    
+                    <div className={footerStyles.linksSection}>
+                        <h3 className={footerStyles.sectionTitle}>Quick Links</h3>
+                        <ul className={footerStyles.linksList}>
+                            {quickLinks.map((link,index) => (
+                                <li key={link.name} className={footerStyles.linkItem}>
+                                    <a href={link.href} className={footerStyles.quickLink}
+                                    styles={{animationDelay: `${index * 60}ms`
+                                    }}>
+                                        <div className={footerStyles.quickLinkIconWrapper}>
+                                            <ArrowRight className={footerStyles.quickLinkIcon}/>
+                                        </div>
+                                        <span>{link.name}</span>
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+
+                    </div>
+                        
+                        <div className={footerStyles.linksSection}>
+                            <h3 className={footerStyles.sectionTitle}> Our Services </h3>
+                            <ul className={footerStyles.linksList}>
+                                {services.map((service, index) => (
+                                <li key={service.name}>
+                                <a href={service.href} className={footerStyles.serviceLink}>
+                                    <div className={footerStyles.serviceIcon}></div>
+                                    <span>{service.name}</span>
+                                </a>
+                                </li>
+                                ))}
+                            </ul>
+                        </div>
                 </div>
             </div>
         </footer>
