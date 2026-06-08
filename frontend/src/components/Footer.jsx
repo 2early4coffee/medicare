@@ -1,7 +1,7 @@
 import React from 'react'
 import { footerStyles } from '../assets/dummyStyles';
 import logo from '../assets/logo.png'
-import { Bird, Users, Briefcase, Play, Stethoscope, Activity, Phone, Mail, MapPin, Camera, ArrowRight } from "lucide-react";
+import { Bird, Users, Briefcase, Play, Stethoscope, Activity, Phone, Mail, MapPin, Camera, ArrowRight, Send } from "lucide-react";
 
 const Footer = () => {
 
@@ -153,8 +153,77 @@ const socialLinks = [
                                 ))}
                             </ul>
                         </div>
+                        
+                                {/* Newsletter & Social */}
+<div className={footerStyles.newsletterSection}>
+    <h3 className={footerStyles.newsletterTitle}>Stay Connected</h3>
+    <p className={footerStyles.newsletterDescription}>
+    Subscribe for health tips, medical updates, and wellness insights delivered
+    to your inbox.
+    </p>
+
+  {/* Newsletter form */}
+    <div className={footerStyles.newsletterForm}>
+    <div className={footerStyles.mobileNewsletterContainer}>
+        <input
+        type="email"
+        placeholder="Enter your email"
+        className={footerStyles.emailInput}
+        />
+        <button className={footerStyles.mobileSubscribeButton}>
+        <Send className={footerStyles.mobileButtonIcon} />
+        Subscribe
+        </button>
+    </div>
+
+    {/* Desktop newsletter */}
+    <div className={footerStyles.desktopNewsletterContainer}>
+        <input
+        type="email"
+        placeholder="Enter your email"
+        className={footerStyles.desktopEmailInput}
+        />
+        <button className={footerStyles.desktopSubscribeButton}>
+        <Send className={footerStyles.desktopButtonIcon} />
+        <span className={footerStyles.desktopButtonText}>Subscribe</span>
+        </button>
+    </div>
+
+    {/* Social icons */}
+    <div className={footerStyles.socialContainer}>
+        {socialLinks.map(({ Icon, color, name, href }, index) => (
+        <a
+            key={name}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={footerStyles.socialLink}
+          style={{ animationDelay: `${index * 120}ms` }}
+        >
+            <div className={footerStyles.socialIconBackground} />
+            <Icon className={`${footerStyles.socialIcon} ${color}`} />
+        </a>
+        ))}
+    </div>
+    </div>
+</div>
+
+                <div className={footerStyles.bottomSection}>
+                    <span className={footerStyles.copyright}>
+                        &copy; {currentYear} Medicare Healthcare.
+                    </span>
+                    <span className={footerStyles.designerText}>
+                        Designed by&nbsp;
+                        <a href="https://github.com/2early4coffee" target="_blank" rel="noreferrer"
+                            className={footerStyles.designerLink}>
+                            2early4coffee
+                        </a>
+                    </span>
+                </div>
                 </div>
             </div>
+
+            <style>{footerStyles.animationStyles}</style>
         </footer>
     )
     

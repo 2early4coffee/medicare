@@ -451,9 +451,9 @@ export const footerStyles = {
   youtubeColor: "hover:text-red-600",
   
   // Bottom section
-  bottomSection: "flex flex-col md:flex-row justify-center lg:justify-between items-center gap-4 md:gap-6 border-t border-emerald-100 pt-6",
-  copyright: "text-emerald-700 text-sm md:text-base font-medium flex items-center gap-2",
-  designerText: "text-emerald-700 text-sm md:text-base font-medium flex items-center gap-2",
+  bottomSection: "flex flex-row items-center justify-between border-t border-emerald-100 pt-6 w-full mt-10",
+  copyright: "text-emerald-700 text-sm font-medium whitespace-nowrap",
+  designerText: "text-emerald-700 text-sm font-medium whitespace-nowrap flex items-center gap-1",
   designerLink: "font-bold text-emerald-500 hover:text-purple-700 transition-colors duration-300",
   
   // Animation keyframes for floating icons (to be added via style tag)
