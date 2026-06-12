@@ -200,7 +200,7 @@ const DoctorsPage = () => {
                 filteredDoctors.length === 0? "opacity-70" : "opacity-100"
               }`}
               >
-                {displayedDoctors.legth > 0 ? (
+                {displayedDoctors.length > 0 ? (
                   displayedDoctors.map((doctor, index) =>(
                     <div key={doctor.id || `${doctor.name}-${index}`}
                     className={`${
