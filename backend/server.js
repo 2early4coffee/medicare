@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { clerkMiddleware } from '@clerk/express';
+// import { clerkMiddleware } from '@clerk/express';
 
 import { connectDB } from './config/db.js';
 
@@ -65,7 +65,7 @@ app.use(
 );
 
 // Clerk middleware
-app.use(clerkMiddleware());
+// app.use(clerkMiddleware());
 
 // Body parsers
 app.use(express.json({ limit: '20mb' }));
