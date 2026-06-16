@@ -564,7 +564,7 @@ const API_BASE = 'http://localhost:4000';
                             <span className=" sm:inline">:</span>
                             <span>{formatTimeAMPM(a.time)}</span>
                         </div>
-                        <div className={listPageStyles.feeText}>₹{a.fee}</div>
+                        <div className={listPageStyles.feeText}>KSh{a.fee}</div>
                         </div>
 
                         <div className={listPageStyles.contactStatusSection}>
