@@ -13,15 +13,15 @@ import Appointments from './pages/Appointments';
 import ListPage from './components/ListPage';
 import { useEffect, useState } from 'react';
 import { CircleChevronUp } from 'lucide-react';
-import VerifyPaymentsPage from '../VerifyPaymentsPage';
-import VerifyServicePaymentPage from '../VerifyServicePaymentPage';
+import VerifyPaymentsPage from './pages/VerifyPaymentsPage';
+import VerifyServicePaymentPage from './pages/VerifyServicePaymentPage';
 
 
 const ScrollToTop = () => {
-  const {pathname} = useLocation();
+  const { pathname } = useLocation();
 
-  useEffect(() =>{
-    window.scrollTo(0 , 0);
+  useEffect(() => {
+    window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [pathname]);
@@ -72,35 +72,35 @@ const App = () => {
 
   return (
     <>
-    <ScrollToTop/>
-    <div className="overflow-x-hidden bg-white text-gray-900">
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/doctors" element={<Doctors/>} />
-        <Route path="/doctors/:id" element={<DoctorDetail/>} />
-        <Route path="/services" element={<Service/>} />
-        <Route path="/services/:id" element={<ServiceDetailPage/>} />
-        
-        <Route path="/appointments" element={<Appointments/>} />
-        <Route path="/contact" element={<Contact/>} />
-        
-        {/* //Doctor */}
-        <Route path="/doctor-admin/login" element={<Login/>} />
-        <Route path="/doctor-admin/:id"  element={<DHome/>} />
-        <Route path="/doctor-admin/:id/appointments" element={<ListPage />} />
-        <Route path="/doctor-admin/:id/profile/edit"  element={<EditProfile/>}/>
-      
-      {/* for the payment verifications */}
-      <Route path="/appointment/success"  element={<VerifyPaymentsPage/>}/>
-      <Route path="/appointment/cancel"  element={<VerifyPaymentsPage/>}/>
+      <ScrollToTop />
+      <div className="overflow-x-hidden bg-white text-gray-900">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/doctors" element={<Doctors />} />
+          <Route path="/doctors/:id" element={<DoctorDetail />} />
+          <Route path="/services" element={<Service />} />
+          <Route path="/services/:id" element={<ServiceDetailPage />} />
 
-      <Route path="/service-appointment/success"  element={<VerifyServicePaymentPage/>}/>
-      <Route path="/service-appointment/cancel"  element={<VerifyServicePaymentPage/>}/>
-      
-      </Routes>
-    </div>
+          <Route path="/appointments" element={<Appointments />} />
+          <Route path="/contact" element={<Contact />} />
 
-    <ScrollButton/>
+          {/* //Doctor */}
+          <Route path="/doctor-admin/login" element={<Login />} />
+          <Route path="/doctor-admin/:id" element={<DHome />} />
+          <Route path="/doctor-admin/:id/appointments" element={<ListPage />} />
+          <Route path="/doctor-admin/:id/profile/edit" element={<EditProfile />} />
+
+          {/* for the payment verifications */}
+          <Route path="/appointment/success" element={<VerifyPaymentsPage />} />
+          <Route path="/appointment/cancel" element={<VerifyPaymentsPage />} />
+
+          <Route path="/service-appointment/success" element={<VerifyServicePaymentPage />} />
+          <Route path="/service-appointment/cancel" element={<VerifyServicePaymentPage />} />
+
+        </Routes>
+      </div>
+
+      <ScrollButton />
     </>
   );
 };

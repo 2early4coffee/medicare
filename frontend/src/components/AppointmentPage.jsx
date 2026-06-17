@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { appointmentPageStyles, cardStyles, badgeStyles, iconSize } from '../assets/dummyStyles';
 import axios from 'axios';
 import { Bell, CalendarDays, CheckCircle, Clock, CreditCard, Wallet, XCircle } from 'lucide-react';
@@ -7,7 +7,7 @@ import { Toaster } from 'react-hot-toast';
 
 
 const API_BASE = 'http://localhost:4000';
-const API = axios.create({baseURL: API_BASE});
+const API = axios.create({ baseURL: API_BASE });
 
 //helper functions
 
@@ -142,7 +142,7 @@ const StatusBadge = ({ itemStatus }) => {
 
 const AppointmentPage = () => {
 
-    const { isLoaded, isSignedIn, getToken } = useAuth();
+  const { isLoaded, isSignedIn, getToken } = useAuth();
   const { user } = useUser();
 
   const [loadingDoctors, setLoadingDoctors] = useState(false);
@@ -160,8 +160,11 @@ const AppointmentPage = () => {
   //to fetch doctor Appointments
   const loadDoctorAppointments = useCallback(async () => {
     if (!isLoaded) return;
-    setLoadingDoctors(true);
-    setError(null);
+
+    setTimeout(() => {
+        setLoadingDoctors(true);
+        setError(null);
+    }, 0);
 
     let token = null;
     try {
@@ -251,10 +254,12 @@ const AppointmentPage = () => {
 
 
   //to load service appointment from the server side
-  const loadServiceAppointments = useCallback(async () => {
+const loadServiceAppointments = useCallback(async () => {
     if (!isLoaded) return;
-    setLoadingServices(true);
-    setError(null);
+    setTimeout(() => {
+        setLoadingServices(true);
+        setError(null);
+    }, 0);
 
     let token = null;
     try {
@@ -325,8 +330,14 @@ const AppointmentPage = () => {
   }, [isLoaded, getToken, user]);
 
   useEffect(() => {
-    loadDoctorAppointments();
-    loadServiceAppointments();
+    if (!isLoaded || !isSignedIn) return;
+
+    const timer = setTimeout(() => {
+        loadDoctorAppointments();
+        loadServiceAppointments();
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [
     isLoaded,
     isSignedIn,
@@ -359,7 +370,7 @@ const AppointmentPage = () => {
     };
   }
 
-    //to get the appointment details
+  //to get the appointment details
   const appointmentData = useMemo(() => {
     return doctorAppts
       .map((a) => {
@@ -475,78 +486,78 @@ const AppointmentPage = () => {
 
   return (
     <div className={appointmentPageStyles.pageContainer}>
-      <Toaster position="top-right"/>
+      <Toaster position="top-right" />
       <div className={appointmentPageStyles.maxWidthContainer}>
-      <h1 className={appointmentPageStyles.doctorTitle}>
-      Your Doctor Appointments
-      </h1>
-      {loadingDoctors && (
-        <div className={appointmentPageStyles.loadingText}>
+        <h1 className={appointmentPageStyles.doctorTitle}>
+          Your Doctor Appointments
+        </h1>
+        {loadingDoctors && (
+          <div className={appointmentPageStyles.loadingText}>
             Loading Doctors...
-        </div>
-      )}
-      
-      {!loadingDoctors && appointmentData.length === 0 && (
-        <div className={appointmentPageStyles.emptyStateText}>
-          No doctor appointments found.
-        </div>
-      )}
+          </div>
+        )}
 
-      <div className={appointmentPageStyles.doctorGrid}>
-        {appointmentData.map((item) => (
-          <div key={item.id} className={cardStyles.doctorCard}>
-            <div className={cardStyles.doctorImageContainer}>
-              <img src={item.image || "/placeholder-doctor.png"} alt={item.doctor} 
-              className={cardStyles.image} loading="lazy" />
-            </div>
-            <h2 className={cardStyles.doctorName}>
-              {item.doctor}
-            </h2>
-            <div className={cardStyles.specialization}>
-              {item.specialization}{" "}
-              {item.experience ? `• ${item.experience}` : ""}
-              <div>
-                <p className={cardStyles.dateContainer}>
-                  <CalendarDays className={iconSize.medium}/> {item.date}
-                </p>
-                <p className={cardStyles.timeContainer}>
-                  <Clock className={iconSize.medium}/> {item.time}
-                </p>
-                <div className={cardStyles.badgesContainer}>
-                  < PaymentBadge payment={item.payment} />
-                  <StatusBadge itemStatus={item.status} />
-                </div>
-                {item.status === "Rescheduled" && item.rescheduledTo ? (
+        {!loadingDoctors && appointmentData.length === 0 && (
+          <div className={appointmentPageStyles.emptyStateText}>
+            No doctor appointments found.
+          </div>
+        )}
+
+        <div className={appointmentPageStyles.doctorGrid}>
+          {appointmentData.map((item) => (
+            <div key={item.id} className={cardStyles.doctorCard}>
+              <div className={cardStyles.doctorImageContainer}>
+                <img src={item.image || "/placeholder-doctor.png"} alt={item.doctor}
+                  className={cardStyles.image} loading="lazy" />
+              </div>
+              <h2 className={cardStyles.doctorName}>
+                {item.doctor}
+              </h2>
+              <div className={cardStyles.specialization}>
+                {item.specialization}{" "}
+                {item.experience ? `• ${item.experience}` : ""}
+                <div>
+                  <p className={cardStyles.dateContainer}>
+                    <CalendarDays className={iconSize.medium} /> {item.date}
+                  </p>
+                  <p className={cardStyles.timeContainer}>
+                    <Clock className={iconSize.medium} /> {item.time}
+                  </p>
+                  <div className={cardStyles.badgesContainer}>
+                    < PaymentBadge payment={item.payment} />
+                    <StatusBadge itemStatus={item.status} />
+                  </div>
+                  {item.status === "Rescheduled" && item.rescheduledTo ? (
                     <div className={cardStyles.rescheduledText}>
-                        Rescheduled to{" "}
-                        <span className={cardStyles.rescheduledSpan}>
-                            {item.rescheduledTo.date} : {item.rescheduledTo.time}
-                        </span>
+                      Rescheduled to{" "}
+                      <span className={cardStyles.rescheduledSpan}>
+                        {item.rescheduledTo.date} : {item.rescheduledTo.time}
+                      </span>
                     </div>
-                ) : null}
+                  ) : null}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-      </div>
+        </div>
 
-      <h2 className={appointmentPageStyles.serviceTitle}>
-      Your Booked Service
-      </h2>
-      {loadingServices && (
-        <div className={appointmentPageStyles.serviceLoadingText}>
+        <h2 className={appointmentPageStyles.serviceTitle}>
+          Your Booked Service
+        </h2>
+        {loadingServices && (
+          <div className={appointmentPageStyles.serviceLoadingText}>
             Loading Services Bookings...
-        </div>
-      )}
-      
-      {!loadingServices && serviceData.length === 0 && (
-        <div className={appointmentPageStyles.serviceEmptyStateText}>
-          No service bookings found.
-        </div>
-      )}
+          </div>
+        )}
 
-      <div className={appointmentPageStyles.serviceGrid}>
+        {!loadingServices && serviceData.length === 0 && (
+          <div className={appointmentPageStyles.serviceEmptyStateText}>
+            No service bookings found.
+          </div>
+        )}
+
+        <div className={appointmentPageStyles.serviceGrid}>
           {serviceData.map((srv) => (
             <div key={srv.id} className={cardStyles.serviceCard}>
               <div className={cardStyles.serviceImageContainer}>
@@ -560,7 +571,7 @@ const AppointmentPage = () => {
 
               <h3 className={cardStyles.serviceName}>{srv.name}</h3>
 
-              <p className={cardStyles.price}>KSh{srv.price}</p>
+              <p className={cardStyles.price}>KSh {srv.price}</p>
 
               <p className={cardStyles.serviceDateContainer}>
                 <CalendarDays className={iconSize.medium} /> {srv.date}
