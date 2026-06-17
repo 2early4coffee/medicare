@@ -14,9 +14,8 @@ const ServiceCard = ({ service }) => {
   const srcSet =
     service.imageSrcSet ||
     (service.imageSmall || service.image
-      ? `${service.imageSmall || src} 480w, ${
-          service.imageMedium || src
-        } 768w, ${service.imageLarge || src} 1200w`
+      ? `${service.imageSmall || src} 480w, ${service.imageMedium || src
+      } 768w, ${service.imageLarge || src} 1200w`
       : null);
 
   const name = service.name || "Service";
@@ -105,9 +104,9 @@ const ServiceCard = ({ service }) => {
   );
 };
 
-const ServicePage = ({previewCount = 9999}) => {
+const ServicePage = ({ previewCount = 9999 }) => {
 
-const API_BASE = "http://localhost:4000";
+  const API_BASE = "http://localhost:4000";
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -178,27 +177,27 @@ const API_BASE = "http://localhost:4000";
         <header className={servicePageStyles.header}>
           <h1 className={servicePageStyles.title}> Our Diagnostic Services </h1>
           <p className={servicePageStyles.subtitle}>
-              Safe, accurate & reliable testing.
+            Safe, accurate & reliable testing.
           </p>
         </header>
 
         {error && (
           <div className={servicePageStyles.errorContainer}>
-                <div className={servicePageStyles.errorText}>{error}</div>
-                <button onClick={loadServices} className={servicePageStyles.retryButton}>
-                  Retry
-                </button>
+            <div className={servicePageStyles.errorText}>{error}</div>
+            <button onClick={loadServices} className={servicePageStyles.retryButton}>
+              Retry
+            </button>
           </div>
         )}
 
         {loading ? (
           <section className={servicePageStyles.skeletonGrid}>
-            {Array.from({length : 8}).map((_,i) => (
+            {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className={servicePageStyles.skeletonCard}>
                 <div className={servicePageStyles.skeletonImage}></div>
-                  <div className={servicePageStyles.skeletonText1}></div>
-                    <div className={servicePageStyles.skeletonText2}></div>
-                      <div className={servicePageStyles.skeletonButton}></div>
+                <div className={servicePageStyles.skeletonText1}></div>
+                <div className={servicePageStyles.skeletonText2}></div>
+                <div className={servicePageStyles.skeletonButton}></div>
 
 
               </div>
@@ -207,11 +206,11 @@ const API_BASE = "http://localhost:4000";
         ) : (
           <section className={serviceCardStyles.servicesGrid}>
             {shown.length > 0 ? (
-              shown.map((s) => <ServiceCard key={s.id || s.name} service={s} /> )
+              shown.map((s) => <ServiceCard key={s.id || s.name} service={s} />)
             ) : (
-                <div className={servicePageStyles.emptyState}>
-                    No services available.
-                </div>
+              <div className={servicePageStyles.emptyState}>
+                No services available.
+              </div>
             )}
 
           </section>

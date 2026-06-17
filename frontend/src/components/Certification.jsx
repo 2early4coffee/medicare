@@ -51,34 +51,34 @@ const Certification = () => {
                         Government recognized and internationally accredited healthcare standards
                     </p>
 
-                      <div className={certificationStyles.badgeContainer}>
-                      <div className={certificationStyles.badgeDot}></div>  
+                    <div className={certificationStyles.badgeContainer}>
+                        <div className={certificationStyles.badgeDot}></div>
                         <span className={certificationStyles.badgeText}>
-                          OFFICIALLY CERTIFIED
+                            OFFICIALLY CERTIFIED
                         </span>
-                      </div> 
+                    </div>
                 </div>
                 <div className={certificationStyles.logosContainer}>
-                  <div className={certificationStyles.logosInner}>
-                          <div className={certificationStyles.logosFlexContainer}>
+                    <div className={certificationStyles.logosInner}>
+                        <div className={certificationStyles.logosFlexContainer}>
                             <div className={certificationStyles.logosMarquee}>
-                              {duplicatedCertifications.map((cert, index) => (
-                                <div key={`cert-${cert.id}-${index}`}
-                                className={certificationStyles.logoItem}>
-                                  <div className="relative">
-                                    <img src={cert.image} alt={cert.name}
-                                    className={certificationStyles.logoIamge} />
-                                  
-                                  </div>
-                                  <span className={certificationStyles.logoText}>
-                                  {cert.name}
-                                  </span>
-                                </div>
-                              ))}
+                                {duplicatedCertifications.map((cert, index) => (
+                                    <div key={`cert-${cert.id}-${index}`}
+                                        className={certificationStyles.logoItem}>
+                                        <div className="relative">
+                                            <img src={cert.image} alt={cert.name}
+                                                className={certificationStyles.logoIamge} />
+
+                                        </div>
+                                        <span className={certificationStyles.logoText}>
+                                            {cert.name}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
 
-                          </div>
-                  </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>

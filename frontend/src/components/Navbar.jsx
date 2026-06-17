@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react"; 
+import { useRef, useState, useEffect } from "react";
 import { navbarStyles } from "../assets/dummyStyles";
 import { useLocation, Link } from "react-router-dom";
 import { useClerk, SignedOut, SignedIn, UserButton } from "@clerk/clerk-react";
@@ -56,9 +56,8 @@ const Navbar = () => {
     <>
       <div className={navbarStyles.navbarBorder}></div>
       <nav ref={navRef}
-        className={`${navbarStyles.navbarContainer} ${
-          showNavbar ? navbarStyles.navbarVisible : navbarStyles.navbarHidden
-        }`}
+        className={`${navbarStyles.navbarContainer} ${showNavbar ? navbarStyles.navbarVisible : navbarStyles.navbarHidden
+          }`}
       >
         <div className={navbarStyles.contentWrapper}>
           <div className={navbarStyles.flexContainer}>
@@ -85,11 +84,10 @@ const Navbar = () => {
                     <Link
                       key={item.href}
                       to={item.href}
-                      className={`${navbarStyles.navItem} ${
-                        isActive
-                          ? navbarStyles.navItemActive
-                          : navbarStyles.navItemInactive
-                      }`}
+                      className={`${navbarStyles.navItem} ${isActive
+                        ? navbarStyles.navItemActive
+                        : navbarStyles.navItemInactive
+                        }`}
                     >
                       {item.label}
                     </Link>
@@ -115,7 +113,7 @@ const Navbar = () => {
               </SignedOut>
 
               <SignedIn>
-                <UserButton/>
+                <UserButton />
               </SignedIn>
 
               {/* Mobile toggle */}
@@ -139,11 +137,10 @@ const Navbar = () => {
                     key={idx}
                     to={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`${navbarStyles.mobileMenuItem} ${  
-                      isActive
-                        ? navbarStyles.mobileMenuItemActive
-                        : navbarStyles.mobileMenuItemInactive       
-                    }`}
+                    className={`${navbarStyles.mobileMenuItem} ${isActive
+                      ? navbarStyles.mobileMenuItemActive
+                      : navbarStyles.mobileMenuItemInactive
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -163,7 +160,7 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       setIsOpen(false);
-                      clerk.openSignIn();                           
+                      clerk.openSignIn();
                     }}
                     className={navbarStyles.mobileLoginButton}
                   >

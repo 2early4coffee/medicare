@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { listPageStyles } from '../assets/dummyStyles'
 import { useParams } from 'react-router-dom'
 import { Calendar, Phone, Search, X } from 'lucide-react';

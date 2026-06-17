@@ -1,4 +1,3 @@
-import React from 'react'
 import DoctorNavbar from './DoctorNavbar'
 import EditProfilePage from '../components/EditProfilePage'
 

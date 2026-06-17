@@ -95,7 +95,7 @@ const DoctorsPage = () => {
     ? filteredDoctors
     : filteredDoctors.slice(0, 8);
 
-    //to retry to load from server
+  //to retry to load from server
   const retry = async () => {
     setLoading(true);
     setError("");
@@ -143,70 +143,67 @@ const DoctorsPage = () => {
 
   return (
     <div className={doctorsPageStyles.mainContainer}>
-        <div className={doctorsPageStyles.backgroundShape1}></div>
-        <div className={doctorsPageStyles.backgroundShape2}></div>
+      <div className={doctorsPageStyles.backgroundShape1}></div>
+      <div className={doctorsPageStyles.backgroundShape2}></div>
 
-        <div className={doctorsPageStyles.wrapper}>
-          <div className={doctorsPageStyles.headerContainer}>
-            <h1 className={doctorsPageStyles.headerTitle} > Our Medical Experts </h1>
-            <p className={doctorsPageStyles.headerSubtitle}>
-              Find your ideal doctor by name or specialization
-            </p>
-          </div>
+      <div className={doctorsPageStyles.wrapper}>
+        <div className={doctorsPageStyles.headerContainer}>
+          <h1 className={doctorsPageStyles.headerTitle} > Our Medical Experts </h1>
+          <p className={doctorsPageStyles.headerSubtitle}>
+            Find your ideal doctor by name or specialization
+          </p>
+        </div>
 
-          <div className={doctorsPageStyles.searchContainer}> 
-            <div className={doctorsPageStyles.searchWrapper}>
-              <input type="text" placeholder = "Search doctors by name or specialization..."
-              value={searchTerm} 
+        <div className={doctorsPageStyles.searchContainer}>
+          <div className={doctorsPageStyles.searchWrapper}>
+            <input type="text" placeholder="Search doctors by name or specialization..."
+              value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={doctorsPageStyles.searchInput} 
-              />
+              className={doctorsPageStyles.searchInput}
+            />
 
-              <Search className={doctorsPageStyles.searchIcon}/>
+            <Search className={doctorsPageStyles.searchIcon} />
             {searchTerm.length > 0 && (
               <button onClick={() => setSearchTerm("")}
-              className={doctorsPageStyles.clearButton}>
-                <X size={20} strokeWidth={2.5}/>
+                className={doctorsPageStyles.clearButton}>
+                <X size={20} strokeWidth={2.5} />
               </button>
             )}
+          </div>
+        </div>
+
+        {error && (
+          <div className={doctorsPageStyles.errorContainer}>
+            <div className={doctorsPageStyles.errorText}>{error}</div>
+            <div className="flex items-center justify-center gap-3">
+              <button onClick={retry} className={doctorsPageStyles.retryButton}>
+                Retry
+              </button>
             </div>
           </div>
+        )}
 
-            {error && (
-              <div className={doctorsPageStyles.errorContainer}>
-                <div className={doctorsPageStyles.errorText}>{error}</div>
-                <div className="flex items-center justify-center gap-3">
-                  <button onClick={retry} className={doctorsPageStyles.retryButton}>
-                    Retry
-                  </button>
-                </div>
+        {/*loading*/}
+        {loading ? (
+          <div className={doctorsPageStyles.skeletonGrid}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className={doctorsPageStyles.skeletonCard}>
+                <div className={doctorsPageStyles.skeletonImage}></div>
+                <div className={doctorsPageStyles.skeletonName}></div>
+                <div className={doctorsPageStyles.skeletonSpecialization}></div>
+                <div className={doctorsPageStyles.skeletonButton}></div>
               </div>
-            )}
-
-            {/*loading*/}
-            {loading ? (
-              <div className={doctorsPageStyles.skeletonGrid}>
-                {Array.from({length: 8}).map((_,i) => (
-                  <div key={i} className={doctorsPageStyles.skeletonCard}>
-                    <div className={doctorsPageStyles.skeletonImage}></div>
-                    <div className={doctorsPageStyles.skeletonName}></div>
-                    <div className={doctorsPageStyles.skeletonSpecialization}></div>
-                    <div className={doctorsPageStyles.skeletonButton}></div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={`${doctorsPageStyles.doctorsGrid} ${
-                filteredDoctors.length === 0? "opacity-70" : "opacity-100"
-              }`}
-              >
-                {displayedDoctors.length > 0 ? (
-                  displayedDoctors.map((doctor, index) =>(
-                    <div key={doctor.id || `${doctor.name}-${index}`}
-                    className={`${
-                      doctorsPageStyles.doctorCard
-                    } ${
-                      !doctor.available ? doctorsPageStyles.doctorCardUnavailable : ""
+            ))}
+          </div>
+        ) : (
+          <div className={`${doctorsPageStyles.doctorsGrid} ${filteredDoctors.length === 0 ? "opacity-70" : "opacity-100"
+            }`}
+          >
+            {displayedDoctors.length > 0 ? (
+              displayedDoctors.map((doctor, index) => (
+                <div key={doctor.id || `${doctor.name}-${index}`}
+                  className={`${doctorsPageStyles.doctorCard
+                    } ${!doctor.available ? doctorsPageStyles.doctorCardUnavailable : ""
                     }`} style={{
                       animationDelay: `${index * 90}ms`
                     }} role="article">
@@ -247,61 +244,61 @@ const DoctorsPage = () => {
                     </div>
                   )}
 
-                    <h3 className={doctorsPageStyles.doctorName}>
+                  <h3 className={doctorsPageStyles.doctorName}>
                     {doctor.name}
-                    </h3>
-                    <p className={doctorsPageStyles.doctorSpecialization}> 
+                  </h3>
+                  <p className={doctorsPageStyles.doctorSpecialization}>
                     {doctor.specialization}
-                    </p>
+                  </p>
 
-                    <div className={doctorsPageStyles.experienceBadge}>
-                      <Medal className={doctorsPageStyles.experienceIcon}/>
-                      <span>{doctor.experience ||  "-"} years Experience </span>
-                    </div>
+                  <div className={doctorsPageStyles.experienceBadge}>
+                    <Medal className={doctorsPageStyles.experienceIcon} />
+                    <span>{doctor.experience || "-"} years Experience </span>
+                  </div>
 
-                    {doctor.available ? (
-                      <Link to={`/doctors/${doctor.id}`}
-                      state={{doctor: doctor.raw || doctor}}
-                      className={doctorsPageStyles.bookButton}> 
-                      < ChevronRight className={doctorsPageStyles.bookButtonIcon}/>
+                  {doctor.available ? (
+                    <Link to={`/doctors/${doctor.id}`}
+                      state={{ doctor: doctor.raw || doctor }}
+                      className={doctorsPageStyles.bookButton}>
+                      < ChevronRight className={doctorsPageStyles.bookButtonIcon} />
                       Book Now
-                      </Link>
-                    ) :(
-                      <button disabled className={doctorsPageStyles.notAvailableButton}>
-                        < MousePointer2Off className={doctorsPageStyles.notAvailableIcon}/>
-                        Not Available
-                      </button>
-                    )}
-                    </div>
-                  ))
-                ): (
-                    <div className={doctorsPageStyles.noResults}>
-                      No doctors found matching your search criteria.
-                    </div>
-
-                )}
-              </div>
-            )}
-            {filteredDoctors.length > 8 &&(
-              <div className={doctorsPageStyles.showMoreContainer}>
-                <button onClick={() => setShowAll(!showAll)} className={doctorsPageStyles.showMoreContainer}>
-                  {showAll ? (
-                  <>
-                  
-                  <CircleChevronUp className={doctorsPageStyles.showMoreIcon}/>
-                  Hide
-                  </>
+                    </Link>
                   ) : (
-                    <>
+                    <button disabled className={doctorsPageStyles.notAvailableButton}>
+                      < MousePointer2Off className={doctorsPageStyles.notAvailableIcon} />
+                      Not Available
+                    </button>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className={doctorsPageStyles.noResults}>
+                No doctors found matching your search criteria.
+              </div>
+
+            )}
+          </div>
+        )}
+        {filteredDoctors.length > 8 && (
+          <div className={doctorsPageStyles.showMoreContainer}>
+            <button onClick={() => setShowAll(!showAll)} className={doctorsPageStyles.showMoreContainer}>
+              {showAll ? (
+                <>
+
+                  <CircleChevronUp className={doctorsPageStyles.showMoreIcon} />
+                  Hide
+                </>
+              ) : (
+                <>
                   <CircleChevronDown className={doctorsPageStyles.showMoreIcon} />
                   Show More
-                  </>
-                  )}
-                </button>
-              </div>
-            )}
-        </div>
-             {/* Animations */}
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+      {/* Animations */}
       <style>{`
         @keyframes fade-in {
           from { opacity: 0; transform: translateY(20px); }
@@ -327,9 +324,9 @@ const DoctorsPage = () => {
           * { animation: none !important; transition: none !important; }
         }
       `}</style>
-  </div>
-  
-)
+    </div>
+
+  )
 
 };
 
