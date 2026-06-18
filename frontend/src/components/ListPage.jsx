@@ -546,7 +546,7 @@ const API_BASE = 'http://localhost:4000';
                                     {a.patient}
                                     </div>
                                     <div className={listPageStyles.cardPatientInfo}>
-                                        {a.age} yrs &midot; {a.gender}
+                                        {a.age} yrs &middot; {a.gender}
                                     </div>
                                     <div className={listPageStyles.cardDoctorInfo}>
                                         <span className={listPageStyles.cardDoctorName}> 
@@ -564,7 +564,7 @@ const API_BASE = 'http://localhost:4000';
                             <span className=" sm:inline">:</span>
                             <span>{formatTimeAMPM(a.time)}</span>
                         </div>
-                        <div className={listPageStyles.feeText}>KSh{a.fee}</div>
+                        <div className={listPageStyles.feeText}>KSh {a.fee}</div>
                         </div>
 
                         <div className={listPageStyles.contactStatusSection}>

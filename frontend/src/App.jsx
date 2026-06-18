@@ -13,8 +13,8 @@ import Appointments from './pages/Appointments';
 import ListPage from './components/ListPage';
 import { useEffect, useState } from 'react';
 import { CircleChevronUp } from 'lucide-react';
-import VerifyPaymentsPage from './pages/VerifyPaymentsPage';
-import VerifyServicePaymentPage from './pages/VerifyServicePaymentPage';
+import VerifyPaymentsPage from '../VerifyPaymentsPage';
+import VerifyServicePaymentPage from '../VerifyServicePaymentPage';
 
 
 const ScrollToTop = () => {

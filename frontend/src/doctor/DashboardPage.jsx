@@ -6,7 +6,6 @@ import {
     XCircle,
     Users,
     Phone,
-    BadgeIndianRupee,
 } from "lucide-react";
 import { dashboardStyles } from "../assets/dummyStyles";
 

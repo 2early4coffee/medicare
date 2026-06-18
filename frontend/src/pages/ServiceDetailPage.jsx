@@ -3,7 +3,6 @@ import {
     ArrowLeft,
     Clock,
     FileText,
-    IndianRupee,
     Send,
     Phone,
 } from "lucide-react";
@@ -624,7 +623,7 @@ export default function ServiceDetail() {
                             <Send />
                             {submitting
                                 ? "Submitting..."
-                                : `Confirm Booking ${service.price ? `• ₹${service.price}` : ""
+                                : `Confirm Booking ${service.price ? `• KSh ${service.price}` : ""
                                 }`}
                         </button>
                     </div>
@@ -642,9 +641,9 @@ export default function ServiceDetail() {
                     </div>
 
                     <div className={serviceDetailStyles.priceContainer}>
-                        <IndianRupee />
+
                         <span className={serviceDetailStyles.priceText}>
-                            {service.price}
+                            KSh {service.price}
                         </span>
                     </div>
 
@@ -686,7 +685,7 @@ export default function ServiceDetail() {
                                 <b>Payment:</b> {paymentMethod}
                             </p>
                             <p>
-                                <b>Price:</b> ₹{service.price}
+                                <b>Price:</b> KSh {service.price}
                             </p>
                         </div>
                     </div>
