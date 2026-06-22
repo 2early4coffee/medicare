@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     Edit2,
@@ -18,9 +18,8 @@ import {
     DollarSign,
     CheckCircle,
     AlertCircle,
-    BadgeIndianRupee,
 } from "lucide-react";
-import { editProfilePageStyles, iconSize } from "../assets/dummyStyles";
+import { editProfilePageStyles } from "../assets/dummyStyles";
 
 const STORAGE_KEY = "doctorToken_v1";
 
@@ -71,6 +70,16 @@ export default function EditProfilePage({ apiBase }) {
 
     const styles = editProfilePageStyles;
 
+    const addToast = (text, type = "success") => {
+        const idt = Date.now() + Math.random();
+        const t = { id: idt, text, type };
+        setToasts((prev) => [t, ...prev.slice(0, 2)]);
+        setTimeout(
+            () => setToasts((prev) => prev.filter((it) => it.id !== idt)),
+            3000,
+        );
+    };
+
     useEffect(() => {
         let cancelled = false;
         async function fetchDoctor() {
@@ -103,16 +112,6 @@ export default function EditProfilePage({ apiBase }) {
         };
     }, [id]);
 
-    //to add toast
-    const addToast = (text, type = "success") => {
-        const idt = Date.now() + Math.random();
-        const t = { id: idt, text, type };
-        setToasts((prev) => [t, ...prev.slice(0, 2)]);
-        setTimeout(
-            () => setToasts((prev) => prev.filter((it) => it.id !== idt)),
-            3000,
-        );
-    };
 
     //to add date and check for duplicate date and prevent it
     const addDate = (dateStr) => {
@@ -332,7 +331,7 @@ export default function EditProfilePage({ apiBase }) {
             },
             {
                 icon: DollarSign,
-                label: "Fee (INR)",
+                label: "Fee (KSh)",
                 value: doc.fee ?? "",
                 onChange: (v) =>
                     setDoc((d) => ({ ...d, fee: v === "" ? "" : Number(v) || 0 })),
@@ -372,10 +371,10 @@ export default function EditProfilePage({ apiBase }) {
                         <div
                             key={t.id}
                             className={`${styles.toastBase} ${t.type === "error"
-                                    ? styles.toastError
-                                    : t.type === "info"
-                                        ? styles.toastInfo
-                                        : styles.toastSuccess
+                                ? styles.toastError
+                                : t.type === "info"
+                                    ? styles.toastInfo
+                                    : styles.toastSuccess
                                 }`}
                         >
                             {t.type === "error" ? (
@@ -527,7 +526,7 @@ export default function EditProfilePage({ apiBase }) {
 
                                     {/* Fee */}
                                     <div className={styles.feeStatItem}>
-                                        <BadgeIndianRupee className={styles.statAmberIcon()} />
+                                        <span className="text-sm font-bold text-amber-700">KSh</span>
                                         {!editing ? (
                                             <span className={styles.statAmberValue}>{doc.fee}</span>
                                         ) : (

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { servicePageStyles, serviceCardStyles } from '../assets/dummyStyles'
-import { ChevronsRight, MousePointer2Off } from 'lucide-react';
+import { ChevronsRight, Ban } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const PlaceholderImg = "/placeholder-service.jpg";
@@ -94,7 +94,7 @@ const ServiceCard = ({ service }) => {
               className={serviceCardStyles.buttonUnavailable}
               aria-label={`${name} not available`}
             >
-              <MousePointer2Off className="w-5 h-5" aria-hidden="true" />
+              <Ban className="w-5 h-5" aria-hidden="true" />
               Not Available
             </button>
           )}

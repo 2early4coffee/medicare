@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { loginPageStyles, toastStyles } from '../assets/dummyStyles';
 import logo from "../assets/logo.png";
 import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 const STORAGE_KEY = "doctorToken_v1";
@@ -100,11 +100,11 @@ const LoginPage = () => {
 
                 <form onSubmit={handleLogin} className={loginPageStyles.form}>
                     <input type="email" name="email" placeholder="Email Address"
-                        valid={formData.email} onChange={handleChange} className={loginPageStyles.input}
+                        value={formData.email} onChange={handleChange} className={loginPageStyles.input}
                         required />
 
                     <input type="password" name="password" placeholder="Password"
-                        valid={formData.password} onChange={handleChange} className={loginPageStyles.input}
+                        value={formData.password} onChange={handleChange} className={loginPageStyles.input}
                         required />
 
                     <button type="submit" disabled={busy} className={loginPageStyles.submitButton}>

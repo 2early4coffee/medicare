@@ -370,8 +370,8 @@ export default function DashboardPage({ apiBase }) {
 
                     <StatCard
                         title="Total Earnings"
-                        value={`₹ ${totalEarnings}`}
-                        icon={<BadgeIndianRupee className="w-5 h-5" />}
+                        value={`Ksh ${totalEarnings}`}
+                        icon={<span className="text-sm font-bold">KSh</span>}
                         accentTop={dashboardStyles.accentTopAmber}
                         accentBottom={dashboardStyles.accentBottomAmber}
                     />
@@ -461,7 +461,7 @@ export default function DashboardPage({ apiBase }) {
 
                                 <div>
                                     <div className={dashboardStyles.cardFooter}>
-                                        <div className={dashboardStyles.feeText}>₹{a.fee}</div>
+                                        <div className={dashboardStyles.feeText}>KSh {a.fee}</div>
 
                                         <div className={dashboardStyles.statusContainer}>
                                             <StatusBadge status={a.status} />

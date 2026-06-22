@@ -1,4 +1,3 @@
-import React from 'react'
 import { footerStyles } from '../assets/dummyStyles';
 import logo from '../assets/logo.png'
 import { Bird, Users, Briefcase, Play, Stethoscope, Activity, Phone, Mail, MapPin, Camera, ArrowRight, Send } from "lucide-react";
@@ -71,6 +70,8 @@ const Footer = () => {
 
             <div className={footerStyles.mainContent}>
                 <div className={footerStyles.gridContainer}>
+                    {/* company, links, services, newsletter */}
+
                     <div className={footerStyles.companySection}>
                         <div className={footerStyles.logoContainer}>
                             <div className={footerStyles.logoWrapper}>
@@ -127,7 +128,7 @@ const Footer = () => {
                             {quickLinks.map((link, index) => (
                                 <li key={link.name} className={footerStyles.linkItem}>
                                     <a href={link.href} className={footerStyles.quickLink}
-                                        styles={{
+                                        style={{
                                             animationDelay: `${index * 60}ms`
                                         }}>
                                         <div className={footerStyles.quickLinkIconWrapper}>
@@ -144,7 +145,7 @@ const Footer = () => {
                     <div className={footerStyles.linksSection}>
                         <h3 className={footerStyles.sectionTitle}> Our Services </h3>
                         <ul className={footerStyles.linksList}>
-                            {services.map((service, index) => (
+                            {services.map((service) => (
                                 <li key={service.name}>
                                     <a href={service.href} className={footerStyles.serviceLink}>
                                         <div className={footerStyles.serviceIcon}></div>
@@ -208,19 +209,19 @@ const Footer = () => {
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className={footerStyles.bottomSection}>
-                        <span className={footerStyles.copyright}>
-                            &copy; {currentYear} Medicare Healthcare.
-                        </span>
-                        <span className={footerStyles.designerText}>
-                            Designed by&nbsp;
-                            <a href="https://github.com/2early4coffee" target="_blank" rel="noreferrer"
-                                className={footerStyles.designerLink}>
-                                2early4coffee
-                            </a>
-                        </span>
-                    </div>
+                <div className={footerStyles.bottomSection}>
+                    <span className={footerStyles.copyright}>
+                        &copy; {currentYear} Medicare Healthcare.
+                    </span>
+                    <span className={footerStyles.designerText}>
+                        Designed by&nbsp;
+                        <a href="https://github.com/2early4coffee" target="_blank" rel="noreferrer"
+                            className={footerStyles.designerLink}>
+                            2early4coffee
+                        </a>
+                    </span>
                 </div>
             </div>
 
