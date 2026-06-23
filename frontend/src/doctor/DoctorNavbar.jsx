@@ -59,7 +59,7 @@ const DoctorNavbar = () => {
 
                                 <span className={navbarStylesDr.linkContent}>
                                     <Icon size={16} className={navbarStylesDr.linkIcon} />
-                                    <span className={navbarStylesDr.linkTex}>{name}</span>
+                                    <span className={navbarStylesDr.linkText}>{name}</span>
                                 </span>
                             </NavLink>
 

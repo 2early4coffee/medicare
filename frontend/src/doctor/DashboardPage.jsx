@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useParams, useLocation } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
     Calendar,
     CheckCircle,
@@ -141,25 +141,20 @@ function normalizeAppointment(a) {
 
 export default function DashboardPage({ apiBase }) {
     const params = useParams();
-    const location = useLocation();
 
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    location.search;
     const API = apiBase || API_BASE;
 
     const doctorId = params.id;
 
     async function fetchAppointments() {
         setLoading(true);
-        setError(null);
         try {
             const basePath = `${API}/api/appointments/doctor/${encodeURIComponent(
                 doctorId,
             )}`;
             const url = `${basePath}`;
-            console.log(url);
 
             const res = await fetch(url);
 
@@ -183,7 +178,6 @@ export default function DashboardPage({ apiBase }) {
             setAppointments(normalized);
         } catch (err) {
             console.error("fetchAppointments:", err);
-            setError(err.message || "Failed to load appointments");
             setAppointments([]);
         } finally {
             setLoading(false);
@@ -191,7 +185,10 @@ export default function DashboardPage({ apiBase }) {
     }
 
     useEffect(() => {
-        fetchAppointments();
+        const timer = setTimeout(() => {
+            fetchAppointments();
+        }, 0);
+        return () => clearTimeout(timer);
     }, [API, doctorId]);
 
     const sorted = useMemo(() => {
@@ -258,7 +255,6 @@ export default function DashboardPage({ apiBase }) {
             setAppointments((prev) =>
                 prev.map((p) => (p.id === id ? { ...p, status: appt.status } : p)),
             );
-            setError(err.message || "Failed to update status");
         }
     }
 
@@ -308,7 +304,6 @@ export default function DashboardPage({ apiBase }) {
             );
         } catch (err) {
             console.error("rescheduleRemote:", err);
-            setError(err.message || "Failed to reschedule");
             await fetchAppointments();
         }
     }
@@ -370,7 +365,7 @@ export default function DashboardPage({ apiBase }) {
 
                     <StatCard
                         title="Total Earnings"
-                        value={`Ksh ${totalEarnings}`}
+                        value={`KSh ${totalEarnings}`}
                         icon={<span className="text-sm font-bold">KSh</span>}
                         accentTop={dashboardStyles.accentTopAmber}
                         accentBottom={dashboardStyles.accentBottomAmber}
@@ -571,8 +566,8 @@ function StatusSelect({ appointment, onChange }) {
                 value={appointment.status}
                 onChange={(e) => onChange(e.target.value)}
                 className={`${dashboardStyles.statusSelect} ${terminal
-                        ? dashboardStyles.statusSelectDisabled
-                        : dashboardStyles.statusSelectEnabled
+                    ? dashboardStyles.statusSelectDisabled
+                    : dashboardStyles.statusSelectEnabled
                     }`}
                 title="Change status (only Completed or Cancelled allowed after reschedule)"
             >
@@ -598,8 +593,8 @@ function StatusSelect({ appointment, onChange }) {
             onChange={(e) => onChange(e.target.value)}
             disabled={terminal}
             className={`${dashboardStyles.statusSelect} ${terminal
-                    ? dashboardStyles.statusSelectDisabled
-                    : dashboardStyles.statusSelectEnabled
+                ? dashboardStyles.statusSelectDisabled
+                : dashboardStyles.statusSelectEnabled
                 }`}
             title={terminal ? "Status cannot be changed" : "Change status"}
         >
@@ -618,7 +613,7 @@ function RescheduleButton({ appointment, onReschedule }) {
     const [editing, setEditing] = useState(false);
     const [date, setDate] = useState("");
     const [time, setTime] = useState("09:00");
-    const minDate = React.useMemo(() => {
+    const minDate = useMemo(() => {
         const d = new Date();
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -626,12 +621,16 @@ function RescheduleButton({ appointment, onReschedule }) {
         return `${y}-${m}-${day}`;
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const apptRaw = appointment.date ? String(appointment.date) : "";
         const apptDate = apptRaw.slice(0, 10);
 
-        setDate(apptDate && apptDate >= minDate ? apptDate : minDate);
-        setTime(appointment.time || "09:00");
+        const timer = setTimeout(() => {
+            setDate(apptDate && apptDate >= minDate ? apptDate : minDate);
+            setTime(appointment.time || "09:00");
+        }, 0);
+
+        return () => clearTimeout(timer);
     }, [appointment.date, appointment.time, minDate]);
 
     function save() {
@@ -663,8 +662,8 @@ function RescheduleButton({ appointment, onReschedule }) {
                             terminal ? "Cannot reschedule completed/cancelled" : "Reschedule"
                         }
                         className={`${dashboardStyles.rescheduleButton} ${terminal
-                                ? dashboardStyles.rescheduleButtonDisabled
-                                : dashboardStyles.rescheduleButtonEnabled
+                            ? dashboardStyles.rescheduleButtonDisabled
+                            : dashboardStyles.rescheduleButtonEnabled
                             }`}
                     >
                         Reschedule

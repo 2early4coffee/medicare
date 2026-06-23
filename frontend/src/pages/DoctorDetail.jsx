@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
     ArrowLeft,
@@ -116,7 +116,10 @@ export default function DoctorDetail() {
     const { isSignedIn, user, isLoaded: userLoaded } = useUser();
 
     useEffect(() => {
-        setIsVisible(true);
+        const timer = setTimeout(() => {
+            setIsVisible(true);
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     // Prefill the form fields quietly if user is available (no UI markup change)
@@ -139,12 +142,16 @@ export default function DoctorDetail() {
                 user.primaryEmailAddress ||
                 "";
 
-            setFormData((prev) => ({
-                ...prev,
-                name: prev.name || fullName,
-                mobile: prev.mobile || phone,
-                email: prev.email || email,
-            }));
+            const timer = setTimeout(() => {
+                setFormData((prev) => ({
+                    ...prev,
+                    name: prev.name || fullName,
+                    mobile: prev.mobile || phone,
+                    email: prev.email || email,
+                }));
+            }, 0);
+
+            return () => clearTimeout(timer);
         }
     }, [userLoaded, user]);
 
@@ -401,8 +408,8 @@ export default function DoctorDetail() {
             </div>
             <div
                 className={`${doctorDetailStyles.mainContent} ${isVisible
-                        ? doctorDetailStyles.visibleState
-                        : doctorDetailStyles.hiddenState
+                    ? doctorDetailStyles.visibleState
+                    : doctorDetailStyles.hiddenState
                     }`}
             >
                 {/* profile card */}
@@ -494,7 +501,7 @@ export default function DoctorDetail() {
                                         <div className={doctorDetailStyles.infoLabel}>
                                             Consultation Fee
                                         </div>
-                                        <div className={doctorDetailStyles.feeValue}>₹{fee}</div>
+                                        <div className={doctorDetailStyles.feeValue}>KSh {fee}</div>
                                     </div>
                                 </div>
 
@@ -556,8 +563,8 @@ export default function DoctorDetail() {
                                                     key={date.toISOString()}
                                                     onClick={() => setSelectedDate(date)}
                                                     className={`${doctorDetailStyles.dateButton} ${isSelected
-                                                            ? doctorDetailStyles.dateButtonSelected
-                                                            : doctorDetailStyles.dateButtonUnselected
+                                                        ? doctorDetailStyles.dateButtonSelected
+                                                        : doctorDetailStyles.dateButtonUnselected
                                                         }`}
                                                 >
                                                     <div className={doctorDetailStyles.dateContent}>
@@ -665,8 +672,8 @@ export default function DoctorDetail() {
                                             key={slot}
                                             onClick={() => setSelectedSlot(slot)}
                                             className={`${doctorDetailStyles.timeSlotButton} ${selectedSlot === slot
-                                                    ? doctorDetailStyles.timeSlotButtonSelected
-                                                    : doctorDetailStyles.timeSlotButtonUnselected
+                                                ? doctorDetailStyles.timeSlotButtonSelected
+                                                : doctorDetailStyles.timeSlotButtonUnselected
                                                 }`}
                                         >
                                             <div className={doctorDetailStyles.timeSlotContent}>
@@ -728,7 +735,7 @@ export default function DoctorDetail() {
                                                 Consultation Fee:
                                             </span>
                                             <span className={doctorDetailStyles.feeDisplay}>
-                                                ₹{fee}
+                                                KSh {fee}
                                             </span>
                                         </div>
                                     </div>
@@ -741,8 +748,8 @@ export default function DoctorDetail() {
                                         <div className={doctorDetailStyles.paymentOptions}>
                                             <label
                                                 className={`${doctorDetailStyles.paymentOption} ${paymentMethod === "Cash"
-                                                        ? doctorDetailStyles.paymentOptionSelected
-                                                        : doctorDetailStyles.paymentOptionUnselected
+                                                    ? doctorDetailStyles.paymentOptionSelected
+                                                    : doctorDetailStyles.paymentOptionUnselected
                                                     }`}
                                             >
                                                 <input
@@ -757,8 +764,8 @@ export default function DoctorDetail() {
                                             </label>
                                             <label
                                                 className={`${doctorDetailStyles.paymentOption} ${paymentMethod === "Online"
-                                                        ? doctorDetailStyles.paymentOptionSelected
-                                                        : doctorDetailStyles.paymentOptionUnselected
+                                                    ? doctorDetailStyles.paymentOptionSelected
+                                                    : doctorDetailStyles.paymentOptionUnselected
                                                     }`}
                                             >
                                                 <input
@@ -778,8 +785,8 @@ export default function DoctorDetail() {
                                         onClick={handleBooking}
                                         disabled={!selectedDate || !selectedSlot || isSubmitting}
                                         className={`${doctorDetailStyles.bookingButton} ${!selectedDate || !selectedSlot || isSubmitting
-                                                ? doctorDetailStyles.bookingButtonDisabled
-                                                : doctorDetailStyles.bookingButtonEnabled
+                                            ? doctorDetailStyles.bookingButtonDisabled
+                                            : doctorDetailStyles.bookingButtonEnabled
                                             }`}
                                     >
                                         <div className={doctorDetailStyles.bookingButtonContent}>

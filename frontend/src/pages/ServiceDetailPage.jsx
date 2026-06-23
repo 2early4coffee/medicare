@@ -17,7 +17,7 @@ export default function ServiceDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const { isSignedIn, userId, getToken } = useAuth();
+    const { isSignedIn, getToken } = useAuth();
 
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedTime, setSelectedTime] = useState("");
@@ -130,8 +130,7 @@ export default function ServiceDetail() {
                 "All endpoints failed, falling back to local servicesData. Last error:",
                 lastError,
             );
-            const local =
-                servicesData && servicesData.find((s) => String(s.id) === String(id));
+            const local = null;;
             if (local) {
                 const cloned = JSON.parse(JSON.stringify(local));
                 if (

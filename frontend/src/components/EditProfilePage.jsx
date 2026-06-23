@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
     Edit2,
     Save,
@@ -55,9 +55,8 @@ function dedupeAndSortSchedule(schedule = {}) {
     return out;
 }
 
-export default function EditProfilePage({ apiBase }) {
+export default function EditProfilePage() {
     const { id } = useParams();
-    const navigate = useNavigate();
     const API_BASE = "http://localhost:4000/api/doctors";
 
     const [doc, setDoc] = useState(null);

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { doctorsPageStyles } from '../assets/dummyStyles'
-import { ChevronRight, CircleChevronDown, CircleChevronUp, Medal, MousePointer2Off, Search, X } from 'lucide-react';
+import { ChevronRight, CircleChevronDown, CircleChevronUp, Medal, Ban, Search, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const DoctorsPage = () => {
@@ -37,7 +37,7 @@ const DoctorsPage = () => {
           const id = d._id || d.id;
           const image =
             d.imageUrl || d.image || d.imageSmall || d.imageSrc || "";
-          let available = true;
+          let available;
           if (typeof d.availability === "string") {
             available = d.availability.toLowerCase() === "available";
           } else if (typeof d.available === "boolean") {
@@ -111,7 +111,7 @@ const DoctorsPage = () => {
       const normalized = (Array.isArray(items) ? items : []).map((d) => {
         const id = d._id || d.id;
         const image = d.imageUrl || d.image || "";
-        let available = true;
+        let available;
         if (typeof d.availability === "string") {
           available = d.availability.toLowerCase() === "available";
         } else if (typeof d.available === "boolean") {
@@ -265,7 +265,7 @@ const DoctorsPage = () => {
                     </Link>
                   ) : (
                     <button disabled className={doctorsPageStyles.notAvailableButton}>
-                      < MousePointer2Off className={doctorsPageStyles.notAvailableIcon} />
+                      < Ban className={doctorsPageStyles.notAvailableIcon} />
                       Not Available
                     </button>
                   )}
@@ -281,7 +281,7 @@ const DoctorsPage = () => {
         )}
         {filteredDoctors.length > 8 && (
           <div className={doctorsPageStyles.showMoreContainer}>
-            <button onClick={() => setShowAll(!showAll)} className={doctorsPageStyles.showMoreContainer}>
+            <button onClick={() => setShowAll(!showAll)} className={doctorsPageStyles.showMoreButton}>
               {showAll ? (
                 <>
 
