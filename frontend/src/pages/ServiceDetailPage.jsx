@@ -25,14 +25,11 @@ export default function ServiceDetail() {
     const [mobile, setMobile] = useState("");
     const [age, setAge] = useState("");
     const [gender, setGender] = useState("");
-
     const [email, setEmail] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("Online");
 
     const [service, setService] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [fetchError, setFetchError] = useState(null);
-
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
@@ -51,13 +48,81 @@ export default function ServiceDetail() {
         if (!mobile || !isValidMobile(mobile)) missing.push("mobile (10 digits)");
         if (!selectedDate) missing.push("date");
         if (!selectedTime) missing.push("time");
-
         if (!isValidAge(age)) missing.push("age (positive integer)");
         if (!gender || !String(gender).trim()) missing.push("gender");
         return missing;
     }
 
     const isFormValid = () => getClientMissingFields().length === 0;
+
+    function normalizeToDateString(d) {
+        const dt = new Date(d);
+        if (isNaN(dt)) return null;
+        return dt.toISOString().split("T")[0];
+    }
+
+    function sortServiceDates(datesArr) {
+        if (!Array.isArray(datesArr)) return [];
+        const uniq = Array.from(
+            new Set(datesArr.map(normalizeToDateString).filter(Boolean)),
+        );
+        const parsed = uniq.map((ds) => ({ ds, date: new Date(ds) }));
+        const dateVal = (d) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+        const today = new Date();
+        const todayVal = dateVal(today);
+        const past = parsed
+            .filter((p) => dateVal(p.date) < todayVal)
+            .sort((a, b) => dateVal(b.date) - dateVal(a.date));
+        const future = parsed
+            .filter((p) => dateVal(p.date) >= todayVal)
+            .sort((a, b) => dateVal(a.date) - dateVal(b.date));
+        return [...past, ...future].map((p) => p.ds);
+    }
+
+    function transformServiceShape(doc) {
+        const out = {};
+        out.id =
+            doc._id ??
+            doc.id ??
+            doc.slug ??
+            String(doc.name).replace(/\s+/g, "-").toLowerCase();
+        out.name = doc.name ?? doc.title ?? "Service";
+        out.image = doc.image || doc.imageUrl || doc.imageURL || doc.image_path || null;
+        out.price = typeof doc.price === "number" ? doc.price : Number(doc.price) || 0;
+        out.about = doc.about ?? doc.description ?? doc.shortDescription ?? "";
+        out.instructions = Array.isArray(doc.instructions) ? doc.instructions : [];
+
+        let dates = Array.isArray(doc.dates) ? doc.dates.slice() : [];
+        let slotsMap = {};
+
+        if (doc.slots && !Array.isArray(doc.slots) && typeof doc.slots === "object") {
+            slotsMap = { ...doc.slots };
+            if (dates.length === 0) dates = Object.keys(slotsMap);
+        } else if (Array.isArray(doc.slots)) {
+            const arr = doc.slots.slice();
+            if (dates.length > 0) {
+                dates.forEach((d) => (slotsMap[d] = arr.slice()));
+            } else {
+                const today = new Date().toISOString().split("T")[0];
+                slotsMap[today] = arr.slice();
+                dates = [today];
+            }
+        } else {
+            if (dates.length > 0) {
+                dates.forEach((d) => (slotsMap[d] = []));
+            } else {
+                const today = new Date().toISOString().split("T")[0];
+                dates = [today];
+                slotsMap[today] = [];
+            }
+        }
+
+        out.dates = sortServiceDates(dates);
+        out.slots = slotsMap;
+        out.imageAlt = doc.imageAlt ?? doc.alt ?? out.name;
+        out.raw = doc;
+        return out;
+    }
 
     useEffect(() => {
         let mounted = true;
@@ -69,7 +134,6 @@ export default function ServiceDetail() {
 
         async function tryFetch() {
             setLoading(true);
-            setFetchError(null);
 
             let lastError = null;
             for (const url of endpoints) {
@@ -92,10 +156,7 @@ export default function ServiceDetail() {
                     if (!res.ok || !contentType.includes("application/json")) {
                         const txt = await res.text().catch(() => "");
                         lastError = new Error(
-                            `Bad response ${res.status} at ${url}: ${String(txt).slice(
-                                0,
-                                200,
-                            )}`,
+                            `Bad response ${res.status} at ${url}: ${String(txt).slice(0, 200)}`,
                         );
                         continue;
                     }
@@ -126,38 +187,8 @@ export default function ServiceDetail() {
             }
 
             if (!mounted) return;
-            console.warn(
-                "All endpoints failed, falling back to local servicesData. Last error:",
-                lastError,
-            );
-            const local = null;;
-            if (local) {
-                const cloned = JSON.parse(JSON.stringify(local));
-                if (
-                    !cloned.slots ||
-                    (Array.isArray(cloned.slots) &&
-                        cloned.dates &&
-                        cloned.dates.length > 0)
-                ) {
-                    const arrSlots = Array.isArray(cloned.slots) ? cloned.slots : [];
-                    const slotsMap = {};
-                    if (cloned.dates && cloned.dates.length > 0) {
-                        cloned.dates.forEach((d) => (slotsMap[d] = arrSlots.slice()));
-                    } else {
-                        const today = new Date().toISOString().split("T")[0];
-                        slotsMap[today] = arrSlots.slice();
-                        cloned.dates = [today];
-                    }
-                    cloned.slots = slotsMap;
-                }
-                setService(cloned);
-                if (cloned.dates && cloned.dates.length > 0)
-                    setSelectedDate(cloned.dates[0]);
-                setLoading(false);
-                return;
-            }
-
-            setFetchError("Unable to fetch service details from server.");
+            console.warn("All endpoints failed. Last error:", lastError);
+            setSubmitError("Unable to fetch service details from server.");
             setLoading(false);
         }
 
@@ -168,91 +199,6 @@ export default function ServiceDetail() {
             controller.abort();
         };
     }, [id]);
-
-    function normalizeToDateString(d) {
-        // Convert anything date-like into YYYY-MM-DD string, or return null if invalid
-        const dt = new Date(d);
-        if (isNaN(dt)) return null;
-        return dt.toISOString().split("T")[0];
-    }
-
-    function sortServiceDates(datesArr) {
-        // Accepts array of mixed date strings / Date objects, returns array of unique YYYY-MM-DD strings
-        if (!Array.isArray(datesArr)) return [];
-
-        const uniq = Array.from(
-            new Set(datesArr.map(normalizeToDateString).filter(Boolean)),
-        );
-
-        const parsed = uniq.map((ds) => ({ ds, date: new Date(ds) }));
-
-        const dateVal = (d) => Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-
-        const today = new Date();
-        const todayVal = dateVal(today);
-
-        const past = parsed
-            .filter((p) => dateVal(p.date) < todayVal)
-            .sort((a, b) => dateVal(b.date) - dateVal(a.date)); // nearest past first
-
-        const future = parsed
-            .filter((p) => dateVal(p.date) >= todayVal)
-            .sort((a, b) => dateVal(a.date) - dateVal(b.date)); // earliest future first (includes today)
-
-        return [...past, ...future].map((p) => p.ds);
-    }
-
-    // Replace your transformServiceShape with this updated version:
-    function transformServiceShape(doc) {
-        const out = {};
-        out.id =
-            doc._id ??
-            doc.id ??
-            doc.slug ??
-            String(doc.name).replace(/\s+/g, "-").toLowerCase();
-        out.name = doc.name ?? doc.title ?? "Service";
-        out.image =
-            doc.image || doc.imageUrl || doc.imageURL || doc.image_path || null;
-        out.price =
-            typeof doc.price === "number" ? doc.price : Number(doc.price) || 0;
-        out.about = doc.about ?? doc.description ?? doc.shortDescription ?? "";
-        out.instructions = Array.isArray(doc.instructions) ? doc.instructions : [];
-
-        let dates = Array.isArray(doc.dates) ? doc.dates.slice() : [];
-        let slotsMap = {};
-        if (
-            doc.slots &&
-            !Array.isArray(doc.slots) &&
-            typeof doc.slots === "object"
-        ) {
-            slotsMap = { ...doc.slots };
-            if (dates.length === 0) dates = Object.keys(slotsMap);
-        } else if (Array.isArray(doc.slots)) {
-            const arr = doc.slots.slice();
-            if (dates.length > 0) {
-                dates.forEach((d) => (slotsMap[d] = arr.slice()));
-            } else {
-                const today = new Date().toISOString().split("T")[0];
-                slotsMap[today] = arr.slice();
-                dates = [today];
-            }
-        } else {
-            if (dates.length > 0) {
-                dates.forEach((d) => (slotsMap[d] = []));
-            } else {
-                const today = new Date().toISOString().split("T")[0];
-                dates = [today];
-                slotsMap[today] = [];
-            }
-        }
-
-        // Ensure dates normalized and ordered: past-first (nearest → older), then today+future (earliest → latest)
-        out.dates = sortServiceDates(dates);
-        out.slots = slotsMap;
-        out.imageAlt = doc.imageAlt ?? doc.alt ?? out.name;
-        out.raw = doc;
-        return out;
-    }
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
@@ -279,15 +225,12 @@ export default function ServiceDetail() {
 
         setSubmitting(true);
         try {
-            // get Clerk token (frontend)
             const token = await getToken().catch(() => null);
 
-            // payload (replace the existing payload in ServiceDetail.jsx)
             const payload = {
                 serviceId:
                     (service?.raw && (service.raw._id || service.raw.id)) || service?.id,
                 serviceName: service?.name || "",
-                // NEW: service image snapshot hints (backend will prefer DB but accepts these)
                 serviceImageUrl:
                     (service?.raw &&
                         (service.raw.imageUrl ||
@@ -295,7 +238,6 @@ export default function ServiceDetail() {
                             service.raw.imageURL ||
                             "")) ||
                     service?.image ||
-                    "" ||
                     "",
                 serviceImagePublicId:
                     (service?.raw &&
@@ -327,9 +269,7 @@ export default function ServiceDetail() {
             if (token) {
                 headers.Authorization = `Bearer ${token}`;
             } else {
-                toast.error(
-                    "Authentication token not available. Please sign in again.",
-                );
+                toast.error("Authentication token not available. Please sign in again.");
                 setSubmitting(false);
                 return;
             }
@@ -364,16 +304,14 @@ export default function ServiceDetail() {
                 return;
             }
 
-            const { appointment, checkoutUrl } = json || {};
+            const { checkoutUrl } = json || {};
 
             if (checkoutUrl) {
                 window.location.href = checkoutUrl;
                 return;
             }
 
-            toast.success(
-                "Booking created successfully. Redirecting to appointments...",
-            );
+            toast.success("Booking created successfully. Redirecting to appointments...");
             setTimeout(() => {
                 navigate("/appointments?payment_status=Paid", { replace: true });
             }, 700);
@@ -397,12 +335,8 @@ export default function ServiceDetail() {
         return (
             <div className={serviceDetailStyles.loadingContainer}>
                 <div className={serviceDetailStyles.loadingCard}>
-                    <h2 className={serviceDetailStyles.loadingTitle}>
-                        Loading service...
-                    </h2>
-                    <p className={serviceDetailStyles.loadingText}>
-                        Fetching details from server
-                    </p>
+                    <h2 className={serviceDetailStyles.loadingTitle}>Loading service...</h2>
+                    <p className={serviceDetailStyles.loadingText}>Fetching details from server</p>
                 </div>
             </div>
         );
@@ -412,9 +346,7 @@ export default function ServiceDetail() {
         return (
             <div className={serviceDetailStyles.loadingContainer}>
                 <div className={serviceDetailStyles.loadingCard}>
-                    <h2 className={serviceDetailStyles.loadingTitle}>
-                        Service not found
-                    </h2>
+                    <h2 className={serviceDetailStyles.loadingTitle}>Service not found</h2>
                     <p className={serviceDetailStyles.loadingText}>
                         Please go back and select a valid service.
                     </p>
@@ -514,11 +446,7 @@ export default function ServiceDetail() {
                                 Payment Method
                             </label>
                             <div className={serviceDetailStyles.paymentOptions}>
-                                <label
-                                    className={serviceDetailStyles.paymentOption(
-                                        paymentMethod === "Cash",
-                                    )}
-                                >
+                                <label className={serviceDetailStyles.paymentOption(paymentMethod === "Cash")}>
                                     <input
                                         type="radio"
                                         name="payment"
@@ -529,11 +457,7 @@ export default function ServiceDetail() {
                                     />
                                     Cash
                                 </label>
-                                <label
-                                    className={serviceDetailStyles.paymentOption(
-                                        paymentMethod === "Online",
-                                    )}
-                                >
+                                <label className={serviceDetailStyles.paymentOption(paymentMethod === "Online")}>
                                     <input
                                         type="radio"
                                         name="payment"
@@ -560,9 +484,7 @@ export default function ServiceDetail() {
                                             setSelectedDate(d);
                                             setSelectedTime("");
                                         }}
-                                        className={serviceDetailStyles.dateButton(
-                                            selectedDate === d,
-                                        )}
+                                        className={serviceDetailStyles.dateButton(selectedDate === d)}
                                     >
                                         {d}
                                     </button>
@@ -581,9 +503,7 @@ export default function ServiceDetail() {
                                         <button
                                             key={t}
                                             onClick={() => setSelectedTime(t)}
-                                            className={serviceDetailStyles.timeButton(
-                                                selectedTime === t,
-                                            )}
+                                            className={serviceDetailStyles.timeButton(selectedTime === t)}
                                         >
                                             <Clock className={`${iconSize.small} mr-1`} />
                                             {t}
@@ -602,14 +522,10 @@ export default function ServiceDetail() {
 
                     <div>
                         {submitError && (
-                            <div className={serviceDetailStyles.errorMessage}>
-                                {submitError}
-                            </div>
+                            <div className={serviceDetailStyles.errorMessage}>{submitError}</div>
                         )}
                         {successMessage && (
-                            <div className={serviceDetailStyles.successMessage}>
-                                {successMessage}
-                            </div>
+                            <div className={serviceDetailStyles.successMessage}>{successMessage}</div>
                         )}
                         <button
                             disabled={!isFormValid() || submitting}
@@ -622,8 +538,7 @@ export default function ServiceDetail() {
                             <Send />
                             {submitting
                                 ? "Submitting..."
-                                : `Confirm Booking ${service.price ? `• KSh ${service.price}` : ""
-                                }`}
+                                : `Confirm Booking ${service.price ? `• KSh ${service.price}` : ""}`}
                         </button>
                     </div>
                 </div>
@@ -640,7 +555,6 @@ export default function ServiceDetail() {
                     </div>
 
                     <div className={serviceDetailStyles.priceContainer}>
-
                         <span className={serviceDetailStyles.priceText}>
                             KSh {service.price}
                         </span>
@@ -658,34 +572,16 @@ export default function ServiceDetail() {
                     </div>
 
                     <div className={serviceDetailStyles.summaryContainer}>
-                        <h3 className={serviceDetailStyles.summaryTitle}>
-                            Booking Summary
-                        </h3>
+                        <h3 className={serviceDetailStyles.summaryTitle}>Booking Summary</h3>
                         <div className={serviceDetailStyles.summaryContent}>
-                            <p>
-                                <b>Name:</b> {customerName || "Not filled"}
-                            </p>
-                            <p>
-                                <b>Mobile:</b> {mobile || "Not filled"}
-                            </p>
-                            <p>
-                                <b>Age:</b> {age || "Not filled"}
-                            </p>
-                            <p>
-                                <b>Gender:</b> {gender || "Not filled"}
-                            </p>
-                            <p>
-                                <b>Date:</b> {selectedDate || "Not selected"}
-                            </p>
-                            <p>
-                                <b>Time:</b> {selectedTime || "Not selected"}
-                            </p>
-                            <p>
-                                <b>Payment:</b> {paymentMethod}
-                            </p>
-                            <p>
-                                <b>Price:</b> KSh {service.price}
-                            </p>
+                            <p><b>Name:</b> {customerName || "Not filled"}</p>
+                            <p><b>Mobile:</b> {mobile || "Not filled"}</p>
+                            <p><b>Age:</b> {age || "Not filled"}</p>
+                            <p><b>Gender:</b> {gender || "Not filled"}</p>
+                            <p><b>Date:</b> {selectedDate || "Not selected"}</p>
+                            <p><b>Time:</b> {selectedTime || "Not selected"}</p>
+                            <p><b>Payment:</b> {paymentMethod}</p>
+                            <p><b>Price:</b> KSh {service.price}</p>
                         </div>
                     </div>
                 </div>
