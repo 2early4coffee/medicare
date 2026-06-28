@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { navbarStyles, navbarStylesDr } from '../assets/dummyStyles';
+import { navbarStylesDr } from '../assets/dummyStyles';
 import logo from '../assets/logo.png';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { Calendar, Edit, Home, LogOut, Menu, X } from 'lucide-react';
@@ -121,7 +121,7 @@ const DoctorNavbar = () => {
             </div>
 
 
-            <div className={navbarStyles.spacer}>
+            <div className="h-16">
 
             </div>
         </>
