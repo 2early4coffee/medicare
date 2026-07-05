@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import  { useState, useEffect, useMemo } from 'react';
 import { dashboardStyles as s } from '../assets/dummyStyles';
-import { CalendarRange, CheckCircle, UserRoundCheck, Users, BadgeIndianRupee, XCircle, Search } from 'lucide-react';
+import { CalendarRange, CheckCircle, UserRoundCheck, Users, XCircle, Search } from 'lucide-react';
 
 const API_BASE = 'http://localhost:4000';
 const PATIENT_COUNT_API = `${API_BASE}/api/appointments/patients/count`;
@@ -242,8 +242,8 @@ const DashboardPage = () => {
                     label = "Total Appointment" value ={totals.totalAppointments}
                     />
 
-                    <StatCard icon = {<BadgeIndianRupee className = "w-6 h-6"/>}
-                    label = "Total Earnings" value={`₹ ${totals.totalEarnings.toLocaleString()}`}
+                    <StatCard icon = {<span className="text-sm font-bold">KSh</span>}
+                    label = "Total Earnings" value={`${totals.totalEarnings.toLocaleString()}`}
                     />
 
                     <StatCard icon = {<CheckCircle className = "w-6 h-6"/>}
@@ -347,7 +347,7 @@ const DashboardPage = () => {
                     </td>
 
                     <td className={s.tableCell + " " + s.feeText}>
-                        ₹ {d.fee}
+                        KSh {d.fee}
                     </td>
 
                     <td className={s.tableCell + " " + s.appointmentsText}>
@@ -363,7 +363,7 @@ const DashboardPage = () => {
                     </td>
 
                     <td className={s.tableCell + " " + s.earningsText}>
-                        ₹ {d.earnings.toLocaleString()}
+                        KSh {d.earnings.toLocaleString()}
                     </td>
                     </tr>
                 ))}
@@ -420,7 +420,7 @@ function MobileDoctorCard({d}){
                             {d.specialization}
                         </div>
                     </div>
-                    <div className= {s.mobileDoctorFee}> ₹ {d.fee} </div>
+                    <div className= {s.mobileDoctorFee}> KSh {d.fee} </div>
             </div>
             <div className={s.mobileStatsGrid}>
                 <div>
@@ -443,7 +443,7 @@ function MobileDoctorCard({d}){
             <div className={s.mobileEarningsContainer}>
 
                 <div> Earned</div>
-                <div className= "font-semibold"> ₹ {d.earnings.toLocaleString()} </div>
+                <div className= "font-semibold"> KSh {d.earnings.toLocaleString()} </div>
             </div>
         </div>
     );
