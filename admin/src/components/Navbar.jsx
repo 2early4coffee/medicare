@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
 import { navbarStyles as ns } from '../assets/dummyStyles';
 import logoImg from '../assets/logo.png';
 import {

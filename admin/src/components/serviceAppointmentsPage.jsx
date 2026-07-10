@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { serviceAppointmentsStyles, serviceDashboardStyles } from '../assets/dummyStyles';
 import { Loader2, Search, SearchIcon } from 'lucide-react';
 
@@ -729,7 +729,7 @@ function formatTwo(n) {
                             <div className={serviceAppointmentsStyles.detailItem}>
                             <BadgeIndianRupee className={serviceAppointmentsStyles.detailIcon} />
                             <span className={serviceAppointmentsStyles.feesText}>
-                                Fees: ₹{a.fees}
+                                Fees: KSh {a.fees}
                             </span>
                             </div>
 
