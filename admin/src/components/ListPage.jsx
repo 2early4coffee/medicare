@@ -165,9 +165,11 @@ const ListPage = () => {
         return filtered.slice(0, 6);
     }, [filtered, showAll]);
 
-    function toggle(id) {
-        setExpanded((prev) => (prev === id ? null : id));
-    }
+const toggle = (id) => {
+    console.log("Toggling id:", id, "type:", typeof id);
+    console.log("Current expanded:", expanded, "type:", typeof expanded);
+    setExpanded((prev) => (prev === String(id) ? null : String(id)));
+};
 
     //to delete any doctor
 
@@ -178,7 +180,7 @@ const ListPage = () => {
         if (!ok) return;
 
         try {
-            const res = await fetch(`${API_BASE}/api/doctors/${id}`, {
+            const res = await fetch(`${API_BASE}/api/doctors/${String(id)}`, {
                 method: "DELETE",
             });
             const body = await res.json().catch(() => null);
@@ -186,7 +188,7 @@ const ListPage = () => {
                 alert(body?.message || "Failed to delete");
                 return;
             }
-            setDoctors((prev) => prev.filter((p) => (p._id || p.id) !== id));
+            setDoctors((prev) => prev.filter((p) => String (p._id || p.id) !== String(id)));
             if (expanded === id) setExpanded(null);
         } catch (err) {
             console.error("delete error", err);
@@ -263,7 +265,7 @@ const ListPage = () => {
                     )}
 
                     {displayed.map((doc) => {
-                        const id = doc._id || doc.id;
+                        const id = String (doc._id || doc.id);
                         const isOpen = expanded === id;
                         const isAvailable = doc.availability === "Available";
 
@@ -304,7 +306,7 @@ const ListPage = () => {
                                     </div>
 
                                     <button
-                                        onClick={() => toggle(id)}
+                                        onClick={() => toggle (String (id))}
                                         className={doctorListStyles.toggleButton(isOpen)}
                                     >
                                         <EyeClosed size={18} />
@@ -328,6 +330,7 @@ const ListPage = () => {
 
                                 </div>
                                 {/* after the expand is done*/}
+                                
                                 <div
                                     className={doctorListStyles.expandableContent}
                                     style={{
@@ -339,6 +342,7 @@ const ListPage = () => {
                                     }}
                                 >
                                     {isOpen && (
+                                        
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                             <div className={doctorListStyles.aboutSection}>
                                                 <h4 className={doctorListStyles.aboutHeading}>About</h4>
