@@ -766,7 +766,7 @@ function sortSlotsForDisplay(slots = []) {
                     </div>
 
                     <div className={s.servicePriceContainer}>
-                      <div className={s.servicePrice}>₹{svc.price}</div>
+                      <div className={s.servicePrice}>KSh {svc.price}</div>
                       <div
                         className={`${s.availabilityBadge} ${
                           svc.available

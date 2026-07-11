@@ -503,7 +503,7 @@ const AddService = ({ serviceId }) => {
                     <input
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="₹ 499"
+                    placeholder="KSh 2500"
                     className={addServiceStyles.formFields.input(errors.price)}
                     inputMode="numeric"
                     />

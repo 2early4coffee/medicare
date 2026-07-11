@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import {  serviceDashboardStyles } from '../assets/dummyStyles.js';
 import { ClipboardList, Calendar, XCircle, CheckCircle, Search, X, BadgeIndianRupee,  } from "lucide-react";
 
@@ -241,7 +241,7 @@ const ServiceDashboard = ({ services: servicesProp = null }) => {
     }, [filteredServices]);
 
     function formatCurrency(v) {
-    return `₹${Number(v || 0).toLocaleString()}`;
+    return `${Number(v || 0).toLocaleString()}`;
     }
 
     
@@ -315,7 +315,7 @@ const ServiceDashboard = ({ services: servicesProp = null }) => {
                 {/* for desktop*/}
                 <div className={serviceDashboardStyles.table.headerLg}>
                 <div className="col-span-5">Service</div>
-                <div className="col-span-2">Price</div>
+                <div className="col-span-2">Price (KSh)</div>
                 <div className={serviceDashboardStyles.table.headerTextLg(1)}>Appointments</div>
                 <div className={serviceDashboardStyles.table.headerTextLg(1)}>Completed</div>
                 <div className={serviceDashboardStyles.table.headerTextLg(1)}>Canceled</div>
