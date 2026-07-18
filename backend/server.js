@@ -13,6 +13,9 @@ import serviceRouter from './routes/serviceRouter.js';
 import appointmentRouter from './routes/appointmentRouter.js';
 import serviceAppointmentRouter from './routes/serviceAppointmentRouter.js';
 
+import statsRouter from './routes/stats.js';
+
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -93,6 +96,8 @@ app.use(
     '/api/service-appointments',
     serviceAppointmentRouter
 );
+
+app.use('/api/stats', statsRouter);
 
 /* TEST ROUTE */
 

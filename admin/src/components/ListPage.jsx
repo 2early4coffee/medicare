@@ -265,12 +265,11 @@ const toggle = (id) => {
                     )}
 
                     {displayed.map((doc) => {
-                        const id = String (doc._id || doc.id);
-                        const isOpen = expanded === id;
-                        const isAvailable = doc.availability === "Available";
-
-                        const scheduleMap = buildScheduleMap(doc.schedule || {});
-                        const sortedDates = getSortedScheduleDates(scheduleMap);
+    const id = String(doc._id || doc.id);
+    const isOpen = expanded === id;
+    const isAvailable = doc.availability === "Available";
+    const scheduleMap = buildScheduleMap(doc.schedule || {});
+    const sortedDates = getSortedScheduleDates(scheduleMap);
 
                         return (
                             <article key={id} className={doctorListStyles.article}>

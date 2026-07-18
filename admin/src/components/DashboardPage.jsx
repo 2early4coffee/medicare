@@ -3,7 +3,7 @@ import { dashboardStyles as s } from '../assets/dummyStyles';
 import { CalendarRange, CheckCircle, UserRoundCheck, Users, XCircle, Search } from 'lucide-react';
 
 const API_BASE = 'http://localhost:4000';
-const PATIENT_COUNT_API = `${API_BASE}/api/appointments/patients/count`;
+const PATIENT_COUNT_API = `${API_BASE}/api/stats/users/count`;
 
 
 //HELPER FUNCTION
@@ -89,6 +89,9 @@ const DashboardPage = () => {
     const [query, setQuery] = useState("");
     const [showAll, setShowAll] = useState(false);
 
+    const [stats, setStats] = useState(null);
+    const [statsLoading, setStatsLoading] = useState(false);
+
     // to load doctors from the server
 
     useEffect(() => {
@@ -163,6 +166,24 @@ const DashboardPage = () => {
         };
     }, []);
 
+    useEffect(() => {
+        let mounted = true;
+        async function loadStats() {
+            setStatsLoading(true);
+            try {
+                const res = await fetch(`${API_BASE}/api/stats/summary`);
+                const body = await res.json();
+                if (mounted && body.success) setStats(body.data);
+            } catch (err) {
+                console.error("Failed to load stats:", err);
+            } finally {
+                if (mounted) setStatsLoading(false);
+            }
+        }
+        loadStats();
+        return () => { mounted = false; };
+    }, []);
+
     // derived totals
     const totals = useMemo(() => {
         const totalDoctors = doctors.length;
@@ -227,31 +248,35 @@ const DashboardPage = () => {
 
                 {/* stats section*/}
                 <div className={s.statsGrid}>
-                    <StatCard icon={<Users className="w-6 h-6" />}
-                        label="Total Doctors" value={totals.totalDoctors}
-
+                    <StatCard
+                        icon={<Users className="w-6 h-6" />}
+                        label="Total Doctors"
+                        value={statsLoading ? "Loading..." : (stats?.totalDoctors ?? totals.totalDoctors)}
                     />
-                    <StatCard icon={<UserRoundCheck className="w-6 h-6" />} // shows count fetch from the backend
-                        label="Total Registered Users" value={
-                            patientCountLoading ? "Loading..."
-                                : (patientCount ?? totals.totalLoginPatients)
-                        }
+                    <StatCard
+                        icon={<UserRoundCheck className="w-6 h-6" />}
+                        label="Total Registered Users"
+                        value={patientCountLoading ? "Loading..." : (patientCount ?? 0)}
                     />
-
-                    <StatCard icon={<CalendarRange className="w-6 h-6" />}
-                        label="Total Appointment" value={totals.totalAppointments}
+                    <StatCard
+                        icon={<CalendarRange className="w-6 h-6" />}
+                        label="Total Appointments"
+                        value={statsLoading ? "Loading..." : (stats?.totalAppointments ?? totals.totalAppointments)}
                     />
-
-                    <StatCard icon={<span className="text-sm font-bold">KSh</span>}
-                        label="Total Earnings" value={`${totals.totalEarnings.toLocaleString()}`}
+                    <StatCard
+                        icon={<span className="text-sm font-bold">KSh</span>}
+                        label="Total Earnings"
+                        value={statsLoading ? "Loading..." : `KSh ${(stats?.totalEarnings ?? totals.totalEarnings).toLocaleString()}`}
                     />
-
-                    <StatCard icon={<CheckCircle className="w-6 h-6" />}
-                        label="Completed" value={totals.completed}
+                    <StatCard
+                        icon={<CheckCircle className="w-6 h-6" />}
+                        label="Completed"
+                        value={statsLoading ? "Loading..." : (stats?.completed ?? totals.completed)}
                     />
-
-                    <StatCard icon={<XCircle className="w-6 h-6" />}
-                        label="Canceled" value={totals.canceled}
+                    <StatCard
+                        icon={<XCircle className="w-6 h-6" />}
+                        label="Canceled"
+                        value={statsLoading ? "Loading..." : (stats?.cancelled ?? totals.canceled)}
                     />
                 </div>
 
@@ -379,10 +404,10 @@ const DashboardPage = () => {
                     </div>
                     {filteredDoctors.length > INITIAL_COUNT && (
                         <div className={s.showMoreContainer}>
-                            <button onClick={() => setShowAll((s) => !s)}
+                            <button onClick={() => setShowAll((prev) => !prev)}
                                 className={s.showMoreButton + " " + s.cursorPointer}>
                                 {showAll ?
-                                    "Show less" : `Show more (${filteredDoctor.length - INITIAL_COUNT})`}
+                                    "Show less" : `Show more (${filteredDoctors.length - INITIAL_COUNT})`}
                             </button>
                         </div>
                     )}
@@ -412,38 +437,39 @@ function MobileDoctorCard({ d }) {
     return (
         <div className={s.mobileDoctorCard}>
             <div className={s.mobileDoctorHeader}>
-                <div className="flex items-center gap-3"></div>
-                <img src={d.image} alt={d.name} className={s.mobileDoctorImage} />
-                <div>
-                    <div className={s.mobileDoctorName}> {d.name}</div>
-                    <div className={s.mobileDoctorSpecialization}>
-                        {d.specialization}
+                {/* */}
+                <div className="flex items-center gap-3">
+                    <img src={d.image} alt={d.name} className={s.mobileDoctorImage} />
+                    <div>
+                        <div className={s.mobileDoctorName}>{d.name}</div>
+                        <div className={s.mobileDoctorSpecialization}>
+                            {d.specialization}
+                        </div>
                     </div>
                 </div>
-                <div className={s.mobileDoctorFee}> KSh {d.fee} </div>
+                <div className={s.mobileDoctorFee}>KSh {d.fee}</div>
             </div>
             <div className={s.mobileStatsGrid}>
                 <div>
-                    <div className={s.mobileStatLabel}> Appts </div>
+                    <div className={s.mobileStatLabel}>Appts</div>
                     <div className={s.mobileStatValue}>{d.appointments.total}</div>
                 </div>
-
                 <div>
-                    <div className={s.mobileStatLabel}> Done </div>
-                    <div className={s.mobileStatValue + " " + s.textEmerald600}>{d.appointments.completed}</div>
+                    <div className={s.mobileStatLabel}>Done</div>
+                    <div className={`${s.mobileStatValue} ${s.textEmerald600}`}>
+                        {d.appointments.completed}
+                    </div>
                 </div>
-
                 <div>
-                    <div className={s.mobileStatLabel}> Cancel </div>
-                    <div className={s.mobileStatValue + " " + s.textRose500}>{d.appointments.canceled}</div>
+                    <div className={s.mobileStatLabel}>Cancel</div>
+                    <div className={`${s.mobileStatValue} ${s.textRose500}`}>
+                        {d.appointments.canceled}
+                    </div>
                 </div>
-
             </div>
-
             <div className={s.mobileEarningsContainer}>
-
-                <div> Earned</div>
-                <div className="font-semibold"> KSh {d.earnings.toLocaleString()} </div>
+                <div>Earned</div>
+                <div className="font-semibold">KSh {d.earnings.toLocaleString()}</div>
             </div>
         </div>
     );
