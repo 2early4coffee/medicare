@@ -4,7 +4,7 @@ import { ChevronRight, CircleChevronDown, CircleChevronUp, Medal, Ban, Search, X
 import { Link } from 'react-router-dom';
 
 const DoctorsPage = () => {
-  const API_BASE = 'http://localhost:4000';
+  const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
   const [allDoctors, setAllDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

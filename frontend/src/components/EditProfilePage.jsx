@@ -57,7 +57,7 @@ function dedupeAndSortSchedule(schedule = {}) {
 
 export default function EditProfilePage() {
     const { id } = useParams();
-    const API_BASE = "http://localhost:4000/api/doctors";
+    const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
 
     const [doc, setDoc] = useState(null);
     const [editing, setEditing] = useState(false);
