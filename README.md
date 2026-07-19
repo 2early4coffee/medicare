@@ -5,7 +5,6 @@ A full-stack healthcare appointment booking platform. MediCare connects patients
 **Live Demo:**
 - Frontend: https://medicare-black-tau.vercel.app
 - Admin Panel: https://medicare-admin-eight.vercel.app
-- Backend API: https://medicare-backend-ycw1.onrender.com
 
 ---
 
