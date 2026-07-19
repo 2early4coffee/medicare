@@ -14,8 +14,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "@clerk/clerk-sdk-node": "4.12.12",
-    "@clerk/express": "2.1.10",
+    "@clerk/clerk-sdk-node": "5.1.6",
+    "@clerk/express": "2.1.43",
     "body-parser": "^2.2.2",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
