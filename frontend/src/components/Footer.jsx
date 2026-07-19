@@ -145,8 +145,8 @@ const Footer = () => {
                     <div className={footerStyles.linksSection}>
                         <h3 className={footerStyles.sectionTitle}> Our Services </h3>
                         <ul className={footerStyles.linksList}>
-                            {services.map((service) => (
-                                <li key={service.name}>
+                            {services.map((service, index) => (
+                                <li key={index}>
                                     <a href={service.href} className={footerStyles.serviceLink}>
                                         <div className={footerStyles.serviceIcon}></div>
                                         <span>{service.name}</span>
