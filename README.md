@@ -1,6 +1,6 @@
 # MediCare — Healthcare Appointment Platform
 
-A full-stack healthcare appointment booking platform built for the Kenyan market. MediCare connects patients with doctors and medical services, enabling online appointment scheduling, service bookings, and secure payments — all in one place.
+A full-stack healthcare appointment booking platform. MediCare connects patients with doctors and medical services, enabling online appointment scheduling, service bookings, and secure payments — all in one place.
 
 **Live Demo:**
 - Frontend: https://medicare-black-tau.vercel.app
