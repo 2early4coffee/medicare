@@ -3,7 +3,7 @@ import { serviceAppointmentsStyles, serviceDashboardStyles } from '../assets/dum
 import {  Loader2, Search, SearchIcon, User, Phone, Calendar, XCircle, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 
-const API_BASE = 'http://localhost:4000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
 
 //helper function
 

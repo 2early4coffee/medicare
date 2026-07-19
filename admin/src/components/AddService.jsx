@@ -5,7 +5,7 @@ import { AlertTriangle, Calendar, CheckCircle, Clock, Clock1, Image, Plus, Trash
 
 
 const AddService = ({ serviceId }) => {
-    const API_BASE = 'http://localhost:4000';
+    const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
     const fileRef = useRef(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [imageFile, setImageFile] = useState(null);

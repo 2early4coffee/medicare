@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { pageStyles, statusClasses, keyframesStyles } from '../assets/dummyStyles'
 import { Calendar, Search, } from 'lucide-react';
 
-const API_BASE = 'http://localhost:4000';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
 
 // HELPER FUNCTIONS
 // this function returns the date as 02 Feb 2026
