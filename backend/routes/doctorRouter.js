@@ -1,10 +1,11 @@
 import express from 'express';
 import multer from 'multer';
+import os from 'os';
 
 import { createDoctor, deleteDoctor, doctorLogin, getDoctorById, getDoctors, toggleAvailability, updateDoctor } from '../controllers/doctorController.js';
 import doctorAuth from '../middlewares/doctorAuth.js';
 
-const upload = multer({ dest: "/temp" });
+const upload = multer({ dest: os.tmpdir() });
 const doctorRouter = express.Router();
 
 // static routes first
