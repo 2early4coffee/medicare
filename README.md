@@ -174,25 +174,6 @@ npm run dev
 
 ---
 
-## Seed Scripts
-
-The `backend` folder includes seed scripts to populate the database with sample Kenyan data:
-
-```bash
-# Seed doctors and services (with Cloudinary image upload)
-node seed.js
-
-# Seed doctor appointments
-node seedAppointments.js
-
-# Seed service appointments
-node seedServiceAppointments.js
-```
-
-> **Note:** Run `seed.js` first before the appointment scripts, as they depend on doctors and services being in the database.
-
----
-
 ## API Endpoints
 
 ### Doctors
