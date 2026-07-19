@@ -23,7 +23,7 @@ const port = process.env.PORT || 4000;
 const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
-    'https://medicare-black-tau.vercel.app', // to update with your deployed frontend URL
+    'https://medicare-admin-eight.vercel.app', // to update with your deployed frontend URL
 ];
 
 /* RATE LIMITERS */
